@@ -1,0 +1,23 @@
+{
+  "name": "hiirulainen",
+  "version": "1.0.0",
+  "description": "Hiirulainen odottaa joulua",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semitaho/hiirulainen.git"
+  },
+  "author": "semitaho",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/semitaho/hiirulainen/issues"
+  },
+  "homepage": "https://github.com/semitaho/hiirulainen#readme",
+  "devDependencies": {
+    "@babylonjs/core": "^5.38.0",
+    "@babylonjs/inspector": "^5.38.0"
+  }
+}

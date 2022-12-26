@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 module.exports = {
     entry: './index.ts',
@@ -14,5 +15,10 @@ module.exports = {
             { test: /\.tsx?$/, loader: "ts-loader" }
         ]
     },
+    plugins: [
+        new webpack.ProvidePlugin({
+            "CANNON": "cannon"
+        })
+    ],
     mode: "development"
 };

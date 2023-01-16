@@ -21,7 +21,6 @@ export class PlayerInput {
   constructor(scene: Scene) {
     this._scene = scene;
     //scene action manager to detect inputs
-    this._scene.actionManager = new ActionManager(this._scene);
 
     this.inputMap = {};
     this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, (evt: ActionEvent) => {
@@ -29,7 +28,6 @@ export class PlayerInput {
       this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
     }));
     this._scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, (evt: ActionEvent) => {
-      console.log('releasing:' + evt.sourceEvent.key);
       this.inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
       if (evt.sourceEvent.key === " ") {
 
@@ -45,10 +43,7 @@ export class PlayerInput {
   private _updateFromKeyboard() {
     const rotationAmount = 0.3;
     const speedAmount = 0.5;
-    if (this.inputMap[" "]){
-      this.jumpKeyDown = true;
-      this.jumpCount++;
-    }
+    
     if (this.inputMap["ArrowUp"]) {
       this.vertical = Scalar.Lerp(this.vertical, speedAmount, 0.1);
       this.verticalAxis = 1;
@@ -75,6 +70,7 @@ export class PlayerInput {
     }
     this.moveDirection =  new Vector3(this.horizontal, 0, this.vertical); //this._moveDirection.scaleInPlace(this._inputAmt * Player.PLAYER_SPEED);
     this.moveDirection = this.moveDirection.scaleInPlace(0.2);
+    console.log("move", this.moveDirection);
   
   }
 }

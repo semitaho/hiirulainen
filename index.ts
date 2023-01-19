@@ -1,8 +1,9 @@
 import * as BABYLON from 'babylonjs';
-import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Engine, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
+import * as GUI from 'babylonjs-gui';
+import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
 import { Player } from './prefabs/player';
 import { Path } from './prefabs/path';
-
+import { UIModel } from './models/ui.model';
 import { TaloObject } from './prefabs/environment/talo.object';
 import { AitiObject } from './prefabs/aiti.object';
 import { MaikkiObject } from './prefabs/maikki.object';
@@ -103,36 +104,105 @@ function createColliderActions(scene: Scene, { player }: ObjectsModel): void {
     player.toggleJump(false);
   });
 
+
 }
 
-function createPickableActions(scene: Scene, objects: ObjectsModel): void {
-  scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
-    trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
-    parameter: objects.collectibles[0].mesh
+function createPickableActions({ scores }: UIModel, { collectibles, player }: ObjectsModel): void {
+  collectibles.forEach(collectible => {
+    const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
+      trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
+      parameter: collectible.mesh
 
-  },
+    },
+      (event: ActionEvent) => {
+        new BABYLON.Sound("pickup", './audio/pickup.mp3', scene, null, {
+          autoplay: true,
+          volume: 0.1
+        });
+        collectible.mesh.dispose(false, true);
+        collectible.mesh = null;
+        scores.text = (parseInt(scores.text, 10) + collectible.points).toString();
+        player.mesh.actionManager.unregisterAction(iaction);
 
-    (event: ActionEvent) => {
-      console.log('ups');
+        // Create a particle system
+        const particleSystem = new BABYLON.ParticleSystem("particles", 60000, scene);
+        // Speed
+        particleSystem.minEmitPower = 55;
+        particleSystem.maxEmitPower = 60;
+        particleSystem.minSize = 10;
+       // particleSystem.min
+        
+        particleSystem.maxLifeTime = 1;
+        //Texture of each particle
+        particleSystem.particleTexture = new BABYLON.Texture("./textures/flare_01.png");
 
-    }));
+        // Position where the particles are emiited from
+        particleSystem.emitter = player.mesh.absolutePosition;
+        particleSystem.color1 = new Color4(0, 1, 0, 0.5);
+        particleSystem.color2 = new Color4(0, 1, 0, 1);
+        particleSystem.start();
+        particleSystem.targetStopDuration = 0.5;
+      }));
+  });
+
 }
 
-function createActions(scene: Scene, objects: ObjectsModel): void {
+
+function createActions(scene: Scene, objects: ObjectsModel, ui: UIModel): void {
   const { player, ground } = objects;
   createKeyboardActions(scene, player);
   createColliderActions(scene, objects);
-  createPickableActions(scene, objects);
+  createPickableActions(ui, objects);
+}
+
+function createShadows(scene: Scene, objects: ObjectsModel): void {
+  const light = new BABYLON.DirectionalLight("dir01", new Vector3(0, -1, 0), scene);
+  light.position = new BABYLON.Vector3(40, 10, 40);
+  light.intensity = 0.1;
+  const shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
+  objects.collectibles.forEach(collectible => shadowGenerator.getShadowMap().renderList.push(collectible.mesh));
+
+  shadowGenerator.getShadowMap().renderList.push(objects.player.vartaloMesh);
+
+}
+
+function createUI(scene: Scene): UIModel {
+  var ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI("ui");
+  const textBlock = new GUI.TextBlock("score", "5");
+  textBlock.color = "yellow";
+  textBlock.fontSize = "50";
+  textBlock.fontWeight = "bold";
+  textBlock.fontFamily = "Verdana";
+  textBlock.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  textBlock.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+  textBlock.setPadding("30", "30", null, null);
+  ui.addControl(textBlock);
+  const textBlock2 = new GUI.TextBlock("hiirulainenPeli", "Hiirulaispeli");
+  textBlock2.color = "red";
+  textBlock2.fontSize = "50";
+  textBlock2.fontWeight = "bold";
+  textBlock2.fontFamily = "Verdana";
+  textBlock2.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  textBlock2.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+  textBlock2.setPadding("30", null, "30", "30");
+  ui.addControl(textBlock2);
+  return {
+    scores: textBlock
+  };
+  //  ui.addControl(new GUI.InputText("kee", "keijo"));
+
 }
 
 function createEnvironment(scene: Scene): ObjectsModel {
   createSkybox(scene);
   const ground = new HiirulainenTerrain(scene);
   const player = new Player(scene);
-  const collectible = new Kannykka(scene);
-  collectible.mesh.position.x = 4;
-  collectible.mesh.position.y = 5;
-  collectible.mesh.position.z = 3;
+  const collectibles = [];
+  for (let i = 0; i < 15; i++) {
+    const collectible = new Kannykka(scene, i);
+    collectibles.push(collectible);
+  }
+
   const talo = new TaloObject(scene, 1);
   talo.setPosition(10, 10, -20);
   const aiti = new AitiObject(scene);
@@ -146,7 +216,7 @@ function createEnvironment(scene: Scene): ObjectsModel {
     player,
     ground,
     aiti,
-    collectibles: [collectible]
+    collectibles
   };
 
 
@@ -162,8 +232,15 @@ function createEnvironment(scene: Scene): ObjectsModel {
 }
 
 const scene: Scene = createScene(engine);
+new BABYLON.Sound("pickup", './audio/mika_hatana.m4a', scene, null, {
+  autoplay: true,
+  loop: true,
+  volume: 1.5
+});
 const objects = createEnvironment(scene);
-createActions(scene, objects);
+const uiModel = createUI(scene);
+createActions(scene, objects, uiModel);
+createShadows(scene, objects)
 
 const path = new Path([
   new Vector2(-3, -4),

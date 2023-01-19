@@ -6,7 +6,10 @@ export abstract class CollectibleModel {
   constructor() {
     this.mesh = MeshBuilder.CreateSphere("paaryna", {
       diameter: 1
-    });  
+    });
+    this.mesh.isNearPickable = true;  
   }
+
+  abstract get points(): number;
 
 }

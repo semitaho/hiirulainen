@@ -1,10 +1,12 @@
-import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3 } from "babylonjs";
+import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3, ActionManager } from "babylonjs";
 import * as BABYLON from 'babylonjs';
 import { PlayerInput } from "../player-input";
 import { HiirulainenScene } from "./hiirulainen.scene";
 import { AbstractHiiriObject } from './abstract-hiiri.object';
 
 export class Player extends AbstractHiiriObject {
+
+  public vartaloMesh: Mesh;
   createBoxVector(): Vector3 {
     return new Vector3(3,3,3);
   }
@@ -17,7 +19,7 @@ export class Player extends AbstractHiiriObject {
 
   constructor(scene: Scene) {
     super(scene, "hiirulainen");
-
+    this.mesh.actionManager = new ActionManager(scene);
     this.mesh.position = new Vector3(2, 2.5, 0);
     this.mesh.setDirection(Vector3.Zero());
 
@@ -33,10 +35,10 @@ export class Player extends AbstractHiiriObject {
   }
 
   protected createVartalo(): Mesh {
-    const vartalo = super.createVartalo();
-    const hiirulaisvartalo = vartalo.material as StandardMaterial;
+    this.vartaloMesh = super.createVartalo();
+    const hiirulaisvartalo = this.vartaloMesh.material as StandardMaterial;
     hiirulaisvartalo.diffuseColor = Color3.Blue();
-    return vartalo;
+    return this.vartaloMesh;
   }
 
 

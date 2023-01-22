@@ -35,6 +35,10 @@ export abstract class AbstractHiiriObject {
     this.mesh.setAbsolutePosition(new Vector3(x, y, z));
   }
 
+  public get position(): Vector3 {
+    return this.mesh.position;
+  }
+
   private createKasi(kasinimi: string, vartaloMesh: Mesh, direction: number, scene: Scene): Mesh {
     const kasi = BABYLON.MeshBuilder.CreateCapsule(this.name + kasinimi, {
       radius: 0.1,

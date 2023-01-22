@@ -16,6 +16,7 @@ export class HiirulainenTerrain {
     const terrainMaterial = new BABYLON.StandardMaterial("materialGround");
     terrainMaterial.diffuseTexture = new BABYLON.Texture("./textures/snow/snow_02_diff_4k.jpg");
     this.mesh.material = terrainMaterial;
+    this.mesh.alphaIndex =2;
     this.createTerrainCollider();
     this.mesh.receiveShadows = true;
   }

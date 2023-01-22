@@ -1,10 +1,15 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
+import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, EventState, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
 import { Player } from './prefabs/player';
 import { Path } from './prefabs/path';
 import { UIModel } from './models/ui.model';
 import { TaloObject } from './prefabs/environment/talo.object';
+import { RoadObject } from './prefabs/environment/road.object';
+import { MultaObject } from './prefabs/environment/multa.object';
+
+import { NurmikkoObject } from './prefabs/environment/nurmikko.object';
+
 import { AitiObject } from './prefabs/aiti.object';
 import { MaikkiObject } from './prefabs/maikki.object';
 import { ObjectsModel } from './models/objects.model';
@@ -95,13 +100,25 @@ function createKeyboardActions(scene: Scene, player: Player): void {
 
 }
 
-function createColliderActions(scene: Scene, { player }: ObjectsModel): void {
+function createColliderActions(scene: Scene, { player, aiti }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(objects.ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
   });
 
   player.mesh.physicsImpostor.registerOnPhysicsCollide(objects.ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
+  });
+ 
+  const babylonSound = new BABYLON.Sound("mikahatana", './audio/mika_hatana.m4a', scene, null, {
+    autoplay: false,
+    loop: false,
+    volume: 1.5
+  });
+  scene.registerBeforeRender(() => {
+     const distance = Vector3.Distance(player.position, aiti.position);
+      if ( distance < 10 && !babylonSound.isPlaying) {
+        babylonSound.play();
+      }
   });
 
 
@@ -117,6 +134,7 @@ function createPickableActions({ scores }: UIModel, { collectibles, player }: Ob
       (event: ActionEvent) => {
         new BABYLON.Sound("pickup", './audio/pickup.mp3', scene, null, {
           autoplay: true,
+          length: 0.3,
           volume: 0.1
         });
         collectible.mesh.dispose(false, true);
@@ -208,10 +226,15 @@ function createEnvironment(scene: Scene): ObjectsModel {
   const aiti = new AitiObject(scene);
   const talo2 = new TaloObject(scene, 2);
   talo2.setPosition(3, 5, 15);
+  new RoadObject(scene);
   for (let i = 0; i <= 10; i++) {
     const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
     maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(-40, 40), 3, HiirulainenTerrain.randomIntFromInterval(2, 50));
   }
+  createTrees(scene);
+  createGrass(scene);
+
+
   return {
     player,
     ground,
@@ -232,11 +255,7 @@ function createEnvironment(scene: Scene): ObjectsModel {
 }
 
 const scene: Scene = createScene(engine);
-new BABYLON.Sound("pickup", './audio/mika_hatana.m4a', scene, null, {
-  autoplay: true,
-  loop: true,
-  volume: 1.5
-});
+
 const objects = createEnvironment(scene);
 const uiModel = createUI(scene);
 createActions(scene, objects, uiModel);
@@ -287,6 +306,32 @@ engine.runRenderLoop(() => {
   scene.render();
   resizeObserver.observe(canvas);
 });
+
+function createTrees(scene: BABYLON.Scene) {
+  const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);
+  for (let i = 0; i < 500; i++) {
+    const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
+    const treePositionX = Math.random() * (-70);
+    tree.position.x = treePositionX;
+    tree.position.z = Math.random() * 20 + 15;
+    tree.position.y = 5;
+    tree.width = 10;
+    tree.height = 20;
+    const multaObject = new MultaObject();
+    multaObject.setPosition(treePositionX, 0.1, 19);
+  }
+}
+
+function createGrass(scene: BABYLON.Scene) {
+  const nurmikkoCount =  15;
+  for (let i = 0; i < nurmikkoCount; i++) {
+    const nurmikkoObject = new NurmikkoObject(scene);
+    nurmikkoObject.setPosition(i * (NurmikkoObject.WIDTH), 0.1, 45);
+  
+
+
+  }
+}
 
 function createSkybox(scene: Scene) {
   scene.clearColor = new BABYLON.Color4(0.5, 0.6, 1, 0.9);

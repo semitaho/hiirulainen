@@ -4,7 +4,7 @@ export abstract class EnvironmentObject {
   public mesh: Mesh;
 
   constructor(name: string) {
-    this.mesh = MeshBuilder.CreateBox(name, { height: 5, width: 1, depth: 1 });
+    this.mesh = MeshBuilder.CreateBox(name);
     this.mesh.visibility = 0;
 
   }
@@ -16,6 +16,10 @@ export abstract class EnvironmentObject {
   }
 
   public setScale(scalingFactor:number): void {
-    this.mesh.position = this.mesh.scaling.scaleInPlace(scalingFactor);
+    this.mesh.scaling.scaleInPlace(scalingFactor);
+  }
+
+  public rotate(amount: number): void {
+    this.mesh.rotation.y = amount;
   }
 }

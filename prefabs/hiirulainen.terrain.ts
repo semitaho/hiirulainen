@@ -1,5 +1,5 @@
 
-import { Color4, GroundMesh, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector3 } from "babylonjs";
+import { Color4, GroundMesh, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector2, Vector3 } from "babylonjs";
 import "../extensions/babylon.dynamicTerrain.js";
 import * as BABYLON from 'babylonjs';
 
@@ -33,6 +33,14 @@ export class HiirulainenTerrain {
 
   public static randomIntFromInterval(min: number, max: number): number { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
+  }
+
+  public getBounds(): Vector3[] {
+    return [
+       this.mesh.getBoundingInfo().boundingBox.minimum,
+       this.mesh.getBoundingInfo().boundingBox.maximum,
+
+    ];
   }
 
 }

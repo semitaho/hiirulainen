@@ -1,6 +1,7 @@
 import * as BABYLON from 'babylonjs';
 import { Vector3 } from 'babylonjs';
 
+const DEFAULT_FRAMERATE = 30;
 export function createKasienheiluttelu(direction: number): BABYLON.Animation {
   const frameRate = 10;
   const kasienheiluttelu = new BABYLON.Animation("kasienheiluttelu", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
@@ -20,24 +21,27 @@ export function createKasienheiluttelu(direction: number): BABYLON.Animation {
   return kasienheiluttelu;
 }
 
-export function createPyoriminen(rotation: Vector3): BABYLON.Animation {
+export function createRenkaanPyoriminen(): BABYLON.Animation {
+  const animWheel = new BABYLON.Animation("wheelAnimation", "rotation.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+  const wheelKeys = [];
 
-  const frameRate = 60;
-  const pyoriminenAnimation = new BABYLON.Animation("pyoriminen", "rotation.y", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE);
-  const keyFrames = [{
+  //At the animation key 0, the value of rotation.y is 0
+  wheelKeys.push({
     frame: 0,
     value: 0
-  }, {
-    frame: frameRate,
-    value:  Math.PI * 4
-  }];
+  });
 
-  pyoriminenAnimation.setKeys(keyFrames);
-  return pyoriminenAnimation;
+  //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
+  wheelKeys.push({
+    frame: DEFAULT_FRAMERATE,
+    value: 2 * Math.PI
+  });
+  animWheel.setKeys(wheelKeys);
+  return animWheel;
 }
 
 export function createSiirtyma(positions: Vector3[]): BABYLON.Animation {
-  const frameRate = 50;
+  const frameRate = 30;
   const pyoriminenAnimation = new BABYLON.Animation("pyoriminen", "position", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const keyFrames = [{
     frame: 0,
@@ -51,7 +55,7 @@ export function createSiirtyma(positions: Vector3[]): BABYLON.Animation {
     value: positions[0]
   }
 
-];
+  ];
 
   pyoriminenAnimation.setKeys(keyFrames);
   return pyoriminenAnimation;

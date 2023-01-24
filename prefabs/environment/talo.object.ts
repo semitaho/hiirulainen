@@ -1,43 +1,59 @@
-import { Color3, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Vector3 } from "babylonjs";
-import { EnvironmentObject} from './environment.object';
+import { Color3, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector3, Vector4 } from "babylonjs";
+import { EnvironmentObject } from './environment.object';
 export class TaloObject extends EnvironmentObject {
 
 
   constructor(scene: Scene, scaleFactor: number = 1) {
-    super("talo"+Math.random());
-    this.mesh.addChild(this.createPerustukset());
-    this.mesh.addChild(this.createKatto());
-    this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, PhysicsImpostor.BoxImpostor, {mass: 0, restitution: 0,  friction: 0 })
+    super("talo" + Math.random());
 
+
+    this.createPerustukset().parent = this.mesh;
+    this.createKatto().parent = this.mesh;
     //this.mesh.scaling = new Vector3(scaleFactor, scaleFactor, scaleFactor);
   }
 
 
-  createPerustukset() {
-    const mesh = MeshBuilder.CreateBox("taloPerustukset", {
-      width: 8,
-      height: 5,
-      depth: 8
+  createPerustukset(): Mesh {
+    
+    const boxMat = new StandardMaterial("boxMat");
+    boxMat.diffuseTexture = new Texture("https://assets.babylonjs.com/environments/cubehouse.png");
+   
+    const vectorForPaksuIkkuna = new Vector4(0.25,0,0.375,0.5)
+    const tyhja = new Vector4(0.48,0,0.625,0.55)
+
+    const faceUV= [
+      vectorForPaksuIkkuna,
+      vectorForPaksuIkkuna,
+      tyhja,
+      tyhja
+
+
+    ];
+    const box = MeshBuilder.CreateBox("box", { 
+      wrap: true, faceUV });
+    box.position.y = 0.5;
+    box.scaling.y = 0.75;
+    box.material = boxMat;
+    box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, {
+      mass: 0,
+      restitution: 0,
+      friction: 10
     });
-    const standardMaterial = new StandardMaterial("taloMaterial");
-    standardMaterial.diffuseColor = new Color3(1,0,0.5);
-    mesh.material = standardMaterial;
-    return mesh;
+
+    return box;
 
   }
 
-  createKatto() {
-    const mesh = MeshBuilder.CreateCylinder("talo1", {
-      diameterBottom: 13,
-      diameterTop: 0, height:4
-
-    });
-    mesh.position.y = 4
+  createKatto(): Mesh {
+    const roof = MeshBuilder.CreateCylinder("roof", { diameter: 1.3, height: 1.2, tessellation: 3 });
+    roof.scaling.x = 0.75;
+    roof.rotation.z = Math.PI / 2;
+    roof.position.y = 1.1;
+    const roofMat = new StandardMaterial("roofMat");
+    roofMat.diffuseTexture = new Texture("https://assets.babylonjs.com/environments/roof.jpg");
     
-    const standardMaterial = new StandardMaterial("kattoMaterial");
-    standardMaterial.diffuseColor = new Color3(0, 0.5, 0);
-    mesh.material = standardMaterial;
-    return mesh;
+    roof.material = roofMat;
+    return roof;
 
   }
 }

@@ -10,6 +10,12 @@ export abstract class CollectibleModel {
     this.mesh.isNearPickable = true;  
   }
 
+  setPosition(x: number, y:number, z: number): void {
+    this.mesh.position.x = x;
+    this.mesh.position.y = y;
+    this.mesh.position.z = z;
+  }
+
   abstract get points(): number;
 
 }

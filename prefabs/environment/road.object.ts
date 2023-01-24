@@ -30,6 +30,9 @@ export class RoadObject extends EnvironmentObject {
 
       kaveyltieMesh.position.z = -8;
       kaveyltieMesh2.position.z = 8;
+      mesh.parent = this.mesh;
+      kaveyltieMesh.parent = this.mesh;
+      kaveyltieMesh2.parent = this.mesh;
 
     }
   }

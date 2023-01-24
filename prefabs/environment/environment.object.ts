@@ -6,6 +6,7 @@ export abstract class EnvironmentObject {
   constructor(name: string) {
     this.mesh = MeshBuilder.CreateBox(name);
     this.mesh.visibility = 0;
+    this.mesh.position.x = 0;
 
   }
 

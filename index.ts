@@ -378,7 +378,8 @@ function createGrass(scene: BABYLON.Scene) {
   const nurmikkoCount = 15;
   for (let i = 0; i < nurmikkoCount; i++) {
     const nurmikkoObject = new NurmikkoObject(scene);
-    nurmikkoObject.setPosition(-150 + i * (NurmikkoObject.WIDTH), 0.1, -45);
+    nurmikkoObject.setPosition(-100 + i * (NurmikkoObject.WIDTH), 0.1, -41);
+    console.log('posnur', nurmikkoObject.mesh.position);
 
 
 

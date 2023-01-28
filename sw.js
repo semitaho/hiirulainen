@@ -1,6 +1,6 @@
 const addResourcesToCache = async (resources) => {
     const cache = await caches.open("v1");
-    await cache.addAll(resources).catch(_=>console.error(`can't load ${file} to cache`));
+    await cache.addAll(resources);
   };
   
   self.addEventListener("install", (event) => {

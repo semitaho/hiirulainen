@@ -7,9 +7,9 @@ const addResourcesToCache = async (resources) => {
     console.log('installs', event);
     event.waitUntil(
       addResourcesToCache([
-        "/index.html",
-        "/audio/**",
-        "/textures/**",
+        "./index.html",
+        "./audio/**",
+        "./textures/**",
        
       ])
     );

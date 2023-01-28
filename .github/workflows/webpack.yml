@@ -4,8 +4,12 @@ on:
   push:
     branches: [ "main" ]
 
+permissions:
+  contents: write
 jobs:
-  build:
+
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }}
     runs-on: ubuntu-latest
 
     strategy:

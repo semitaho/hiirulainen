@@ -12,7 +12,7 @@ module.exports = {
       "CANNON": "cannon"
     }),
 
-    new webpack.ProvidePlugin({
+     new webpack.ProvidePlugin({
       'BABYLON': 'babylonjs',
     }),
     new HtmlWebpackPlugin({
@@ -21,11 +21,17 @@ module.exports = {
     }),
     new WebpackPwaManifest({
       name: 'Hiirulaispeli',
+      id: 'hiirulainen',
       short_name: 'Hiirulainen',
       publicPath: './',
       description: 'Lasten oma hiirulaispeli, jossa leikitään piilosta!',
       background_color: '#ffffff',
       icons: [
+        {
+          src: 'icons/hiirulaisicon.png',
+          sizes: [96, 128, 192, 256, 384, 512] // multiple sizes
+
+        }
 
       ]
     })

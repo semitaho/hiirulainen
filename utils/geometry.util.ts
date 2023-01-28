@@ -14,7 +14,6 @@ export function moveTowards(mesh: Mesh, location: Vector2, camera: ArcFollowCame
    // console.log('current pos', this.mesh.position);
    // const target =  new Vector3(0, location.y, 0).subtract(new  Vector3(0, this.mesh.position.y, 0));
     //this.mesh.rotate(Vector3.Up(),0.05)
-    console.log('camera', camera);
     let angle = Math.atan2(location.x-mesh.position.x ,location.y-mesh.position.z);
     angle += camera.rotation.y;
     let targ = Quaternion.FromEulerAngles(0, angle, 0);

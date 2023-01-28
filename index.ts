@@ -16,6 +16,8 @@ import { PlayerInput } from './player-input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { HiirulainenScene } from './prefabs/hiirulainen.scene';
 import { createRenkaanPyoriminen } from './prefabs/animations';
+import * as serviceWorker from './service.worker';
+
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 var engine: Engine = new Engine(canvas, true);
 if (Engine.audioEngine) {
@@ -344,12 +346,12 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
   new RoadObject(scene);
   const maikit = [];
-  const piilopaikat = [new Vector2(-40, 20), new Vector2(0, -90),  new Vector2(-5, -85), new Vector2(-60, 30)];
+  const piilopaikat = [new Vector2(-40, 20), new Vector2(0, -90), new Vector2(-5, -85), new Vector2(-60, 30)];
   for (let i = 0; i <= 10; i++) {
     const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
     maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(24, 35), 1.5, HiirulainenTerrain.randomIntFromInterval(26, 43));
     //const newPiilopaikka = new Vector2(HiirulainenTerrain.randomIntFromInterval(-24, 35), HiirulainenTerrain.randomIntFromInterval(-24, -50));
-    maikki.setPiilopaikka(piilopaikat[HiirulainenTerrain.randomIntFromInterval(0, piilopaikat.length-1)]);
+    maikki.setPiilopaikka(piilopaikat[HiirulainenTerrain.randomIntFromInterval(0, piilopaikat.length - 1)]);
     maikit.push(maikki);
   }
   createTrees(scene);
@@ -377,6 +379,26 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
 }
 
+const registerServiceWorker = async () => {
+  if ("serviceWorker" in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register("/sw.js", {
+        scope: "/",
+      });
+      if (registration.installing) {
+        console.log("Service worker installing");
+      } else if (registration.waiting) {
+        console.log("Service worker installed");
+      } else if (registration.active) {
+        console.log("Service worker active");
+      }
+    } catch (error) {
+      console.error(`Registration failed with ${error}`);
+    }
+  }
+}
+
+registerServiceWorker();
 const scene: Scene = createScene(engine);
 
 const objects = createEnvironment(scene);
@@ -419,7 +441,7 @@ scene.registerBeforeRender(() => {
       startTimeInWaypoint = -1;
     }
   } else {
-   // aiti.moveTowards(path.getCurrentWaypoint(), camera);
+    // aiti.moveTowards(path.getCurrentWaypoint(), camera);
   }
   piilotettavat.forEach(piilotettava => {
     moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);

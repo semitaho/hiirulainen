@@ -5,7 +5,16 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: './index.ts',
+  entry: {
+    'index': './index.ts',
+    'sw': './sw.js'
+  },
+
+  output: {
+    filename: '[name].js',
+    path: path.resolve(__dirname, 'dist')
+},
+
   plugins: [
 
     new webpack.ProvidePlugin({

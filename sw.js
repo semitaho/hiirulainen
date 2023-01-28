@@ -15,7 +15,7 @@
   \***************/
 /***/ (() => {
 
-eval("const addResourcesToCache = async (resources) => {\n    const cache = await caches.open(\"v1\");\n    await cache.addAll(resources);\n  };\n  \n  self.addEventListener(\"install\", (event) => {\n    ('installs', event);\n    event.waitUntil(\n      addResourcesToCache([\n        \"/index.html\",\n        \"/audio/**\",\n        \"/textures/**\",\n       \n      ])\n    );\n  });\n\n//# sourceURL=webpack://hiirulainen/./sw.js?");
+eval("const addResourcesToCache = async (resources) => {\n    const cache = await caches.open(\"v1\");\n    await cache.addAll(resources);\n  };\n  \n  self.addEventListener(\"install\", (event) => {\n    ('installs', event);\n    event.waitUntil(\n      addResourcesToCache([\n        \"./index.html\",\n        \"./audio/**\",\n        \"./textures/**\",\n       \n      ])\n    );\n  });\n\n//# sourceURL=webpack://hiirulainen/./sw.js?");
 
 /***/ })
 

@@ -1,11 +1,13 @@
 import { Color3, Mesh, PhysicsImpostor, Scene, StandardMaterial, Vector3 } from "babylonjs";
-import { TransformNode } from "babylonjs/index";
+import { TransformNode, Vector2 } from "babylonjs/index";
+import { Piilotettava } from "../models/piilotettava.interface";
 import { AbstractHiiriObject } from "./abstract-hiiri.object";
 
-export class MaikkiObject extends AbstractHiiriObject {
+export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 
+  private piilopaikka: Vector2;
   constructor(private scene: Scene, direction: number) {
-    super(scene, "maikki");
+    super(scene, "maikki", false);
 
     this.setPosition(10, 4, 4);
 
@@ -25,9 +27,22 @@ export class MaikkiObject extends AbstractHiiriObject {
 
     }
     this.mesh.scaling = new Vector3(0.9, 0.9, 0.9);
-   
+    this.mesh.physicsImpostor = null;
 
   }
+  setPiilopaikka(piilopaikka: Vector2) {
+    this.piilopaikka = piilopaikka;
+  }
+
+  getPiilopaikka(): Vector2 {
+    return this.piilopaikka;
+  }
+
+  getMesh(): Mesh {
+    return this.mesh;
+  }
+
+
 
   createBoxVector(): Vector3 {
     return new Vector3(4,3,4);

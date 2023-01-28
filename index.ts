@@ -6,7 +6,7 @@ import { Path } from './prefabs/path';
 import { UIModel } from './models/ui.model';
 import { AutoObject, NurmikkoObject, TimanttiObject, TaloObject, RoadObject, MultaObject } from './prefabs/environment/';
 
-
+import { calculateWidth, moveTowards } from './utils/geometry.util';
 import { AitiObject } from './prefabs/aiti.object';
 import { MaikkiObject } from './prefabs/maikki.object';
 import { ObjectsModel } from './models/objects.model';
@@ -19,7 +19,7 @@ import { createRenkaanPyoriminen } from './prefabs/animations';
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 var engine: Engine = new Engine(canvas, true);
 if (Engine.audioEngine) {
-  Engine.audioEngine.useCustomUnlockedButton = true;
+  //Engine.audioEngine.useCustomUnlockedButton = true;
 }
 function createScene(engine: BABYLON.Engine): Scene {
   let hiirulainenScene = new HiirulainenScene(engine);
@@ -108,15 +108,17 @@ function createColliderActions(scene: Scene, { player, aiti }: ObjectsModel): vo
     player.toggleJump(false);
   });
 
-  const babylonSound = new HiirulainenAudio('mika_hatana.m4a', scene, {
-    autoplay: false,
-    loop: false,
-    volume: 1.5
-  });
+  const babylonSound = new HiirulainenAudio('mika_hatana.m4a', scene,
+    () => { },
+    {
+      autoplay: false,
+      loop: false,
+      volume: 1.5
+    });
   scene.registerBeforeRender(() => {
     const distance = Vector3.Distance(player.position, aiti.position);
     if (distance < 10 && !babylonSound.isPlaying) {
-      babylonSound.play();
+      //babylonSound.play();
     }
   });
 
@@ -130,8 +132,8 @@ function createPickableActions({ scores }: UIModel, { collectibles, player }: Ob
       parameter: collectible.mesh
     },
       (event: ActionEvent) => {
-        new HiirulainenAudio("pickup.mp3", scene, {
-          autoplay: true,
+        new HiirulainenAudio("pickup.mp3", scene, () => { }, {
+          //autoplay: true,
           length: 0.3,
           volume: 0.1
         });
@@ -240,6 +242,59 @@ function createCars(scene: Scene): void {
   scene.beginAnimation(car.mesh, 0, 300, true);
 }
 
+function startLaskeminen(scene: Scene) {
+  const audio = new HiirulainenAudio("Yksi.m4a", scene,
+
+    () => {
+      console.log('hei vaan!');
+      const audio3 = new HiirulainenAudio("Kolme.m4a", scene, null);
+      const audio4 = new HiirulainenAudio("Nelja.m4a", scene, null);
+      const audio5 = new HiirulainenAudio("Viisi.m4a", scene, null, {
+      });
+      const tullaan = new HiirulainenAudio("Tullaan.m4a", scene, null);
+      audio.onEndedObservable.add(() => {
+        console.log("valmix yksf");
+        const audio2 = new HiirulainenAudio("Kaksi.m4a", scene, () => {
+          audio2.play(1.5);
+          audio2.onEndedObservable.add(() => {
+            audio3.play(1.5);
+            audio3.onEndedObservable.add(() => {
+              audio4.play(1.5);
+              audio4.onEndedObservable.add(() => {
+                audio5.play(1.5);
+                audio5.onEndedObservable.add(() => {
+                  tullaan.play(1.5);
+
+                })
+
+              });
+
+            });
+          });
+
+        });
+      });
+      audio.play();
+
+
+    },
+    {
+      loop: false,
+      volume: 1.5
+    });
+
+}
+
+function createAudio(scene: Scene): void {
+  const audio = new HiirulainenAudio("tunetank.mp3", scene, () => {
+  }, {
+    autoplay: true,
+    volume: 0.2
+  });
+
+  startLaskeminen(scene);
+}
+
 function createEnvironment(scene: Scene): ObjectsModel {
   createSkybox(scene);
   const ground = new HiirulainenTerrain(scene);
@@ -256,30 +311,46 @@ function createEnvironment(scene: Scene): ObjectsModel {
       HiirulainenTerrain.randomIntFromInterval(bounds[0].z + 50, bounds[1].z - 50));
     scene.beginAnimation(collectible.mesh, 0, 30, true);
     collectibles.push(collectible);
+    createAudio(scene);
+
   }
 
-  const taloCount =  10;
+  const taloCount = 10;
   const syvyysCount = 2;
   for (let j = 1; j <= syvyysCount; j++) {
     for (let i = 1; i <= taloCount; i++) {
       const talo = new TaloObject(scene, 1);
-      talo.setPosition(bounds[0].x + (10 * i), 0,  -100 + (20 * j));
-      talo.setScale(HiirulainenTerrain.randomIntFromInterval(5,8));
+      talo.setPosition(bounds[0].x + (10 * i), 0, -100 + (20 * j));
+      talo.setScale(HiirulainenTerrain.randomIntFromInterval(5, 8));
       talo.rotate(Math.PI / 2)
     }
 
+    const ravintola = new TaloObject(scene, 3000);
+    //   ravintola.mesh.scaling.x = 100;
+    //  ravintola.mesh.scaling.y = 50;
+    ravintola.setPosition(25, 0, 50);
+    ravintola.setScale(5);
+    ravintola.mesh.scaling.x = 25;
+    ravintola.mesh.scaling.y = 20;
+    ravintola.mesh.position.y = -4;
+
   }
- 
+
 
   const aiti = new AitiObject(scene);
   const talo2 = new TaloObject(scene, 2);
   talo2.setPosition(3, 0, 15);
-  talo2.setScale(HiirulainenTerrain.randomIntFromInterval(4,7));
+  talo2.setScale(HiirulainenTerrain.randomIntFromInterval(4, 7));
 
   new RoadObject(scene);
+  const maikit = [];
+  const piilopaikat = [new Vector2(-40, 20), new Vector2(0, -90),  new Vector2(-5, -85), new Vector2(-60, 30)];
   for (let i = 0; i <= 10; i++) {
     const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
-    maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(-40, 40), 3, HiirulainenTerrain.randomIntFromInterval(2, 50));
+    maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(24, 35), 1.5, HiirulainenTerrain.randomIntFromInterval(26, 43));
+    //const newPiilopaikka = new Vector2(HiirulainenTerrain.randomIntFromInterval(-24, 35), HiirulainenTerrain.randomIntFromInterval(-24, -50));
+    maikki.setPiilopaikka(piilopaikat[HiirulainenTerrain.randomIntFromInterval(0, piilopaikat.length-1)]);
+    maikit.push(maikki);
   }
   createTrees(scene);
   createGrass(scene);
@@ -290,7 +361,8 @@ function createEnvironment(scene: Scene): ObjectsModel {
     player,
     ground,
     aiti,
-    collectibles
+    collectibles,
+    piilotettavat: maikit
   };
 
 
@@ -330,7 +402,7 @@ let resizeObserver: ResizeObserver = new ResizeObserver((entries) => {
 new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
 
 //const playerInput = new PlayerInput(scene);
-const { player, aiti } = objects;
+const { player, aiti, piilotettavat } = objects;
 let currentTimeInMilliseconds = 0;
 let startTimeInWaypoint = -1;
 scene.registerBeforeRender(() => {
@@ -347,8 +419,12 @@ scene.registerBeforeRender(() => {
       startTimeInWaypoint = -1;
     }
   } else {
-    aiti.moveTowards(path.getCurrentWaypoint(), camera);
+   // aiti.moveTowards(path.getCurrentWaypoint(), camera);
   }
+  piilotettavat.forEach(piilotettava => {
+    moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);
+
+  });
 
 });
 
@@ -370,7 +446,8 @@ function createTrees(scene: BABYLON.Scene) {
     tree.height = randomHeight;
     tree.position.set(treePositionX, randomHeight - 10, Math.random() * 50 + 15);
     const multaObject = new MultaObject();
-    multaObject.setPosition(treePositionX, 0.1, 20);
+
+    multaObject.setPosition(-100 + (calculateWidth(multaObject) / 2) + (i * calculateWidth(multaObject)), 0.1, 26);
   }
 }
 
@@ -378,11 +455,7 @@ function createGrass(scene: BABYLON.Scene) {
   const nurmikkoCount = 15;
   for (let i = 0; i < nurmikkoCount; i++) {
     const nurmikkoObject = new NurmikkoObject(scene);
-    nurmikkoObject.setPosition(-100 + i * (NurmikkoObject.WIDTH), 0.1, -41);
-    console.log('posnur', nurmikkoObject.mesh.position);
-
-
-
+    nurmikkoObject.setPosition((-100 + NurmikkoObject.WIDTH / 2) + i * (NurmikkoObject.WIDTH), 0.1, -41);
   }
 }
 

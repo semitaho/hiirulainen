@@ -7,7 +7,7 @@ export abstract class AbstractHiiriObject {
   public mesh: BABYLON.Mesh;
   private readonly mass = 20;
 
-  constructor(scene: Scene, private name: string) {
+  constructor(scene: Scene, private name: string, usePhysics = true) {
     const { x, y, z } = this.createBoxVector();
     this.mesh = BABYLON.MeshBuilder.CreateBox(this.name, { width: x, height: y, depth: z });
     this.mesh.visibility = 0;
@@ -19,14 +19,15 @@ export abstract class AbstractHiiriObject {
     this.createSilma("silma2", meshPaa, 1);
     this.createKorva("korva1", meshPaa, 1);
     this.createKorva("korva2", meshPaa, -1);
-    this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
-      mass: this.mass,
-      restitution: 0,
-      friction: 1,
+    if (usePhysics) {
+      this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
+        mass: this.mass,
+        restitution: 0,
+        friction: 1,
 
-      
-    });
-   
+
+      });
+    }
   }
 
   abstract createBoxVector(): Vector3;
@@ -54,11 +55,11 @@ export abstract class AbstractHiiriObject {
     const newMesh = BABYLON.Mesh.MergeMeshes([kasi, kasi2])
     newMesh.parent = vartaloMesh;
     newMesh.rotation.x = BABYLON.Tools.ToRadians(-20);
-    newMesh.setPositionWithLocalVector(new Vector3( (newMesh.getBoundingInfo().boundingSphere.radius+ 0.2)  * direction, 0, 0.2));
+    newMesh.setPositionWithLocalVector(new Vector3((newMesh.getBoundingInfo().boundingSphere.radius + 0.2) * direction, 0, 0.2));
     const frameRate = 50;
     const kasienheiluttelu = createKasienheiluttelu(direction);
     newMesh.animations.push(kasienheiluttelu);
-    scene.beginAnimation(newMesh, 0, 2* frameRate, true);
+    scene.beginAnimation(newMesh, 0, 2 * frameRate, true);
     return kasi;
   }
 

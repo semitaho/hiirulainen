@@ -17,7 +17,7 @@ export class RoadObject extends EnvironmentObject {
 
   private createRoadNetwork(): void {
     const roadPieces = 20;
-    const startX = -100;
+    const startX = -100 + (this.kavelytieWidth / 2);
     for (let i = 0; i < roadPieces; i++) 
     {
       const mesh = this.buildRoadMesh();

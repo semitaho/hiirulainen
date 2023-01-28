@@ -2,7 +2,8 @@ import { ArcFollowCamera, Camera, PhysicsImpostor, Quaternion, Scene, Vector2, V
 
 import { createKasi } from './mesh.creator';
 import { AbstractHiiriObject } from './abstract-hiiri.object';
-
+import { moveTowards } from "../utils/geometry.util";
+ 
 
  export class AitiObject extends AbstractHiiriObject {
 
@@ -38,26 +39,7 @@ import { AbstractHiiriObject } from './abstract-hiiri.object';
   }
 
   moveTowards(location: Vector2, camera: ArcFollowCamera): void {
-   
-   // console.log('current pos', this.mesh.position);
-   // const target =  new Vector3(0, location.y, 0).subtract(new  Vector3(0, this.mesh.position.y, 0));
-    //this.mesh.rotate(Vector3.Up(),0.05)
-    let angle = Math.atan2(location.x-this.mesh.position.x ,location.y-this.mesh.position.z);
-    angle += camera.rotation.y;
-    let targ = Quaternion.FromEulerAngles(0, angle, 0);
-    this.mesh.rotationQuaternion =  Quaternion.Slerp(this.mesh.rotationQuaternion, targ, 0.2);
-    this.mesh.translate(Vector3.Forward(), 0.05);
-   // this.mesh.translate()
-
-    //   this.mesh.moveWithCollisions(location);
-  
-    /*
-    let angle = Math.atan2(playerInput.horizontalAxis, playerInput.verticalAxis);
-    angle += camera.rotation.y;
-    let targ = Quaternion.FromEulerAngles(0, angle, 0);
-    this.mesh.rotationQuaternion =
-   // this.mesh.ro
-   */
+    moveTowards(this.mesh, location, camera);
   }
 
 }

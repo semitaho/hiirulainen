@@ -20,8 +20,8 @@ export class Player extends AbstractHiiriObject {
   constructor(scene: Scene) {
     super(scene, "hiirulainen");
     this.mesh.actionManager = new ActionManager(scene);
-    this.mesh.position = new Vector3(5, 1.5, 0);
-    this.mesh.setDirection(Vector3.Zero());
+    this.mesh.position = new Vector3(35, 1.5, 47);
+    this.mesh.setDirection(Vector3.Forward());
 
 
     //meshHiirulainen.physicsImpostor= new PhysicsImpostor(boxCollider, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 10   });

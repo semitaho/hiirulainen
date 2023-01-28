@@ -1,7 +1,7 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
-
+const CopyPlugin = require("copy-webpack-plugin");
 const RemoveConsolePlugin = require('remove-console-webpack-plugin');
 module.exports = (env) => {
     return {
@@ -17,19 +17,32 @@ module.exports = (env) => {
         },
         module: {
             rules: [
+
+            
                 { test: /\.tsx?$/, loader: "ts-loader" },
                 {
                     test: /\babylon.dynamicTerrain.js\.js$/,
                     use: ['imports-loader?BABYLON=>require("babylonjs")']
                 }
             ]
+
         },
         plugins: [
             new webpack.ProvidePlugin({
                 "CANNON": "cannon"
             }),
 
+            new CopyPlugin({
+                patterns: [
+                  { from: "audio", to: "audio" },
+                  { from: "textures", to: "textures" },
+
+                ],
+              }),
+
             new RemoveConsolePlugin(),
+
+
 
 
             new webpack.ProvidePlugin({

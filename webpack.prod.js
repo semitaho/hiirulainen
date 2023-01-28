@@ -26,14 +26,12 @@ module.exports = merge(common, {
 
     },
     plugins: [
-        new webpack.ProvidePlugin({
-            "CANNON": "cannon"
-        }),
-
+    
         new CopyPlugin({
             patterns: [
                 { from: "audio", to: "audio" },
                 { from: "textures", to: "textures" },
+                { from: "icons", to: "icons" },
 
             ],
         }),

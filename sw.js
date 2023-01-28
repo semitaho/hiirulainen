@@ -1,11 +1,18 @@
 const addResourcesToCache = async (resources) => {
     const cache = await caches.open("v1");
     await cache.addAll(resources);
+    console.log('done adding cache!');
+    self.skipWaiting();
 };
 
 self.addEventListener('fetch', function (event) {
     console.log('fetching:' + event);
 });
+
+self.addEventListener('activate', function(event) {
+    console.log('Claiming control');
+    return self.clients.claim();
+  });
 
 self.addEventListener("install", (event) => {
     console.log('installs', event);
@@ -14,6 +21,8 @@ self.addEventListener("install", (event) => {
             "./index.html",
             "./index.js",
             "./audio/tunetank.mp3",
+            "./audio/pickup.mp3",
+
             "./audio/Yksi.m4a",
             "./audio/Kaksi.m4a",
             "./audio/Kolme.m4a",
@@ -28,5 +37,6 @@ self.addEventListener("install", (event) => {
             "./textures/snow/snow_02_diff_4k.jpg",
 
         ])
-    );
+    )
+
 });

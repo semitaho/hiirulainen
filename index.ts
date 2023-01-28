@@ -16,7 +16,25 @@ import { PlayerInput } from './player-input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { HiirulainenScene } from './prefabs/hiirulainen.scene';
 import { createRenkaanPyoriminen } from './prefabs/animations';
-import * as serviceWorker from './service.worker';
+const registerServiceWorker = async () => {
+  if ("serviceWorker" in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register("./sw.js", {
+        scope: '.'
+      });
+      if (registration.installing) {
+        console.log("Service worker installing");
+      } else if (registration.waiting) {
+        console.log("Service worker installed");
+      } else if (registration.active) {
+        console.log("Service worker active");
+      }
+    } catch (error) {
+      console.error(`Registration failed with ${error}`);
+    }
+  }
+}
+registerServiceWorker();
 
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 var engine: Engine = new Engine(canvas, true);
@@ -379,26 +397,8 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
 }
 
-const registerServiceWorker = async () => {
-  if ("serviceWorker" in navigator) {
-    try {
-      const registration = await navigator.serviceWorker.register("./sw.js", {
-        scope: '.'
-      });
-      if (registration.installing) {
-        console.log("Service worker installing");
-      } else if (registration.waiting) {
-        console.log("Service worker installed");
-      } else if (registration.active) {
-        console.log("Service worker active");
-      }
-    } catch (error) {
-      console.error(`Registration failed with ${error}`);
-    }
-  }
-}
 
-registerServiceWorker();
+
 const scene: Scene = createScene(engine);
 
 const objects = createEnvironment(scene);

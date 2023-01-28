@@ -1,0 +1,42 @@
+{
+  "icons": [
+    {
+      "src": "./icon_512x512.9636fc2d6d67b3362f7e7bb24133be5d.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_384x384.2ed05f14550ba70051879a8f90b33cd3.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_256x256.f68a71911e4b9b7b5e5afa4b3883b95c.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_192x192.69d70436f5ce51890d9bb223e085fbfb.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_128x128.315fbce3c1315b608bdf59ae2707f7eb.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon_96x96.b45c94cdc230a8b27469c6c3c1842e05.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ],
+  "name": "Hiirulaispeli",
+  "short_name": "Hiirulainen",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": ".",
+  "id": "hiirulainen",
+  "description": "Lasten oma hiirulaispeli, jossa leikitään piilosta!",
+  "background_color": "#ffffff"
+}

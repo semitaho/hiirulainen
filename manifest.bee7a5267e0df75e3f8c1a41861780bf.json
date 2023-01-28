@@ -1,9 +1,0 @@
-{
-  "name": "Hiirulaispeli",
-  "short_name": "Hiirulainen",
-  "orientation": "portrait",
-  "display": "standalone",
-  "start_url": ".",
-  "description": "Lasten oma hiirulaispeli, jossa leikitään piilosta!",
-  "background_color": "#ffffff"
-}

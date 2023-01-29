@@ -257,6 +257,7 @@ function startLaskeminen(scene: Scene) {
       const tullaan = new HiirulainenAudio("Tullaan.m4a", scene, null);
       audio.onEndedObservable.add(() => {
         console.log("valmix yksf");
+        /*
         const audio2 = new HiirulainenAudio("Kaksi.m4a", scene, () => {
           audio2.play(1.5);
           audio2.onEndedObservable.add(() => {
@@ -274,8 +275,10 @@ function startLaskeminen(scene: Scene) {
 
             });
           });
+          
 
         });
+        */
       });
       audio.play();
 

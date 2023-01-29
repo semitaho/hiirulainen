@@ -38,9 +38,7 @@ registerServiceWorker();
 
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 var engine: Engine = new Engine(canvas, true);
-if (Engine.audioEngine) {
-  //Engine.audioEngine.useCustomUnlockedButton = true;
-}
+
 function createScene(engine: BABYLON.Engine): Scene {
   let hiirulainenScene = new HiirulainenScene(engine);
   return hiirulainenScene;
@@ -127,21 +125,6 @@ function createColliderActions(scene: Scene, { player, aiti }: ObjectsModel): vo
   player.mesh.physicsImpostor.registerOnPhysicsCollide(objects.ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
   });
-
-  const babylonSound = new HiirulainenAudio('mika_hatana.m4a', scene,
-    () => { },
-    {
-      autoplay: false,
-      loop: false,
-      volume: 1.5
-    });
-  scene.registerBeforeRender(() => {
-    const distance = Vector3.Distance(player.position, aiti.position);
-    if (distance < 10 && !babylonSound.isPlaying) {
-      //babylonSound.play();
-    }
-  });
-
 
 }
 
@@ -307,8 +290,8 @@ function startLaskeminen(scene: Scene) {
 
 function createAudio(scene: Scene): void {
   const audio = new HiirulainenAudio("tunetank.mp3", scene, () => {
+    audio.play();
   }, {
-    autoplay: true,
     volume: 0.2
   });
 

@@ -1,6 +1,5 @@
 import { ArcFollowCamera, Camera, PhysicsImpostor, Quaternion, Scene, Vector2, Vector3 } from "babylonjs";
 
-import { createKasi } from './mesh.creator';
 import { AbstractHiiriObject } from './abstract-hiiri.object';
 import { moveTowards } from "../utils/geometry.util";
  

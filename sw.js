@@ -23,6 +23,7 @@ const CACHED_RESOURCES = [
   "textures/soilMud.jpeg",
   "textures/snow/snow_02_diff_4k.jpg",
   "hiirulaisicon.png",
+  "https://assets.babylonjs.com/environments/cubehouse.png",
   "https://assets.babylonjs.com/environments/car.png",
   "https://assets.babylonjs.com/environments/wheel.png",
   "https://assets.babylonjs.com/environments/roof.jpg"

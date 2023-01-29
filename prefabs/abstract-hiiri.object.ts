@@ -108,7 +108,7 @@ export abstract class AbstractHiiriObject {
   protected createPaa(hiirulainen: TransformNode): Mesh {
     const capsule = BABYLON.MeshBuilder.CreateCapsule("paa", {
       radius: 0.2,
-      height: 1.8,
+      height: 1.4,
       orientation: Vector3.Forward(),
       radiusTop: 0.5
     });

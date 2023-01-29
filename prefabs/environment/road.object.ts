@@ -43,6 +43,7 @@ export class RoadObject extends EnvironmentObject {
     });
     mesh.position.y =0.1
     mesh.material = this.buildTieMaterial();
+    mesh.receiveShadows = true;
     return mesh;
   }
 
@@ -53,6 +54,7 @@ export class RoadObject extends EnvironmentObject {
     });
     mesh.position.y =0.1
     mesh.material = this.buildKavelytieMaterial();
+    mesh.receiveShadows = true;
     return mesh;
   }
 

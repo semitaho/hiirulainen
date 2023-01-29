@@ -7,6 +7,7 @@ export abstract class EnvironmentObject {
     this.mesh = MeshBuilder.CreateBox(name);
     this.mesh.visibility = 0;
     this.mesh.position.x = 0;
+    this.mesh.receiveShadows = true;
 
   }
 
@@ -23,4 +24,5 @@ export abstract class EnvironmentObject {
   public rotate(amount: number): void {
     this.mesh.rotation.y = amount;
   }
+
 }

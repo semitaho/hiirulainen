@@ -20,7 +20,6 @@ export class Player extends AbstractHiiriObject {
   constructor(scene: Scene) {
     super(scene, "hiirulainen");
     this.mesh.actionManager = new ActionManager(scene);
-    this.mesh.position = new Vector3(35, 1.5, 47);
     this.mesh.setDirection(Vector3.Forward());
 
 

@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, EventState, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
+import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, EventState, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, ISoundOptions, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
 import { Player } from './prefabs/player';
 import { Path } from './prefabs/path';
 import { UIModel } from './models/ui.model';
@@ -12,7 +12,6 @@ import { MaikkiObject } from './prefabs/maikki.object';
 import { ObjectsModel } from './models/objects.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
-import { PlayerInput } from './player-input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { HiirulainenScene } from './prefabs/hiirulainen.scene';
 import { createRenkaanPyoriminen } from './prefabs/animations';
@@ -57,8 +56,6 @@ function createKeyboardActions(scene: Scene, player: Player): void {
     () => {
       console.log('SPACE button was pressed');
       tryJump = true;
-
-
     })
   );
   let
@@ -135,7 +132,7 @@ function createPickableActions({ scores }: UIModel, { collectibles, player }: Ob
       parameter: collectible.mesh
     },
       (event: ActionEvent) => {
-        new HiirulainenAudio("pickup.mp3", scene, () => { }, {
+        createHiirulainenAudio("pickup.mp3", scene, {
           //autoplay: true,
           length: 0.3,
           volume: 0.1
@@ -173,13 +170,13 @@ function createActions(scene: Scene, objects: ObjectsModel, ui: UIModel): void {
   const { player, ground } = objects;
   createKeyboardActions(scene, player);
   createColliderActions(scene, objects);
-  createPickableActions(ui, objects);
+  //createPickableActions(ui, objects);
 }
 
 function createShadows(scene: Scene, objects: ObjectsModel): void {
   const light = new BABYLON.DirectionalLight("dir01", new Vector3(0, -1, 0), scene);
   light.position = new BABYLON.Vector3(40, 10, 40);
-  light.intensity = 0.1;
+  light.intensity = 0.3;
   const shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
   objects.collectibles.forEach(collectible => shadowGenerator.getShadowMap().renderList.push(collectible.mesh));
 
@@ -245,58 +242,96 @@ function createCars(scene: Scene): void {
   scene.beginAnimation(car.mesh, 0, 300, true);
 }
 
-function startLaskeminen(scene: Scene) {
-  const audio = new HiirulainenAudio("Yksi.m4a", scene,
+function createHiirulainenAudio(filenameWithoutPath: string, scene: Scene, options: ISoundOptions): Promise<HiirulainenAudio> {
+  return new Promise((resolve, _) => {
+    const hiirulainenAudio = new HiirulainenAudio(filenameWithoutPath, scene, () => {
+      resolve(hiirulainenAudio);
+    }, options);
+  });
+}
 
-    () => {
-      console.log('hei vaan!');
-      const audio3 = new HiirulainenAudio("Kolme.m4a", scene, null);
-      const audio4 = new HiirulainenAudio("Nelja.m4a", scene, null);
-      const audio5 = new HiirulainenAudio("Viisi.m4a", scene, null, {
-      });
-      const tullaan = new HiirulainenAudio("Tullaan.m4a", scene, null);
-      audio.onEndedObservable.add(() => {
-        console.log("valmix yksf");
-        /*
-        const audio2 = new HiirulainenAudio("Kaksi.m4a", scene, () => {
-          audio2.play(1.5);
-          audio2.onEndedObservable.add(() => {
-            audio3.play(1.5);
-            audio3.onEndedObservable.add(() => {
-              audio4.play(1.5);
-              audio4.onEndedObservable.add(() => {
-                audio5.play(1.5);
-                audio5.onEndedObservable.add(() => {
-                  tullaan.play(1.5);
-
-                })
-
-              });
-
-            });
-          });
-          
-
-        });
-        */
-      });
-      audio.play();
-
-
-    },
-    {
-      loop: false,
-      volume: 1.5
+function afterAudioPlayedCreateNewPlayeable(audio: HiirulainenAudio, newAudioPromise: Promise<HiirulainenAudio>): Promise<HiirulainenAudio> {
+  return new Promise(resolve => {
+    audio.onEndedObservable.add(() => {
+      resolve(newAudioPromise);
     });
+
+  });
 
 }
 
-function createAudio(scene: Scene): void {
-  const audio = new HiirulainenAudio("tunetank.mp3", scene, () => {
-    audio.play();
-  }, {
-    volume: 0.2
+function startLaskeminen(scene: Scene) {
+  createHiirulainenAudio("Yksi.m4a", scene, {
+    loop: false,
+    volume: 0.6
+  }).then((audio: HiirulainenAudio) => {
+    audio.play(2);
+    return afterAudioPlayedCreateNewPlayeable(
+      audio,
+      createHiirulainenAudio("Kaksi.m4a", scene, null));
+  }).then((newAudio: HiirulainenAudio) => {
+    newAudio.play(1);
+    return afterAudioPlayedCreateNewPlayeable(newAudio,
+      createHiirulainenAudio("Kolme.m4a", scene, null));
+  }).then((newAudio: HiirulainenAudio) => {
+    newAudio.play(1);
+    return afterAudioPlayedCreateNewPlayeable(newAudio,
+      createHiirulainenAudio("Nelja.m4a", scene, null));
+  }).then((newAudio: HiirulainenAudio) => {
+    newAudio.play(1);
+    return afterAudioPlayedCreateNewPlayeable(newAudio,
+      createHiirulainenAudio("Viisi.m4a", scene, {
+        volume: 0.4
+      }));
+  }).then((newAudio: HiirulainenAudio) => {
+    newAudio.play(1);
+    return afterAudioPlayedCreateNewPlayeable(newAudio,
+      createHiirulainenAudio("Tullaan.m4a", scene, null));
+  }).then((newAudio: HiirulainenAudio) => {
+    newAudio.play(2);
   });
+
+  /*
+   () => {
+     console.log('hei vaan!');
+     const audio3 = new HiirulainenAudio("Kolme.m4a", scene);
+     const audio4 = new HiirulainenAudio("Nelja.m4a", scene);
+     const audio5 = new HiirulainenAudio("Viisi.m4a", scene, null, {
+     });
+     const tullaan = new HiirulainenAudio("Tullaan.m4a", scene, null);
+     audio.onEndedObservable.add(() => {
+       console.log("valmix yksf");
+      
+       const audio2 = new HiirulainenAudio("Kaksi.m4a", scene, () => {
+         audio2.play(1.5);
+         audio2.onEndedObservable.add(() => {
+           audio3.play(1.5);
+           audio3.onEndedObservable.add(() => {
+             audio4.play(1.5);
+             audio4.onEndedObservable.add(() => {
+               audio5.play(1.5);
+               audio5.onEndedObservable.add(() => {
+                 tullaan.play(1.5);
+
+               })
+
+             });
+
+           });
+         });
+         
+
+       });
+       
+     });
+    // audio.play();
+    */
+}
+function createAudio(scene: Scene): void {
+
+  createHiirulainenAudio("tunetank.mp3", scene, {
+    volume: 0.2, autoplay: false, loop: true
+  }).then((audio: HiirulainenAudio) => audio.play());
 
   startLaskeminen(scene);
 }
@@ -305,6 +340,8 @@ function createEnvironment(scene: Scene): ObjectsModel {
   createSkybox(scene);
   const ground = new HiirulainenTerrain(scene);
   const player = new Player(scene);
+  player.setPosition(35, 1.5, 47);
+
   const collectibles = [];
   const bounds = ground.getBounds();
   for (let i = 0; i < 15; i++) {
@@ -317,8 +354,6 @@ function createEnvironment(scene: Scene): ObjectsModel {
       HiirulainenTerrain.randomIntFromInterval(bounds[0].z + 50, bounds[1].z - 50));
     scene.beginAnimation(collectible.mesh, 0, 30, true);
     collectibles.push(collectible);
-    createAudio(scene);
-
   }
 
   const taloCount = 10;
@@ -344,6 +379,7 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
 
   const aiti = new AitiObject(scene);
+  aiti.setPosition(40, 2, 47);
   const talo2 = new TaloObject(scene, 2);
   talo2.setPosition(3, 0, 15);
   talo2.setScale(HiirulainenTerrain.randomIntFromInterval(4, 7));
@@ -388,6 +424,7 @@ function createEnvironment(scene: Scene): ObjectsModel {
 const scene: Scene = createScene(engine);
 
 const objects = createEnvironment(scene);
+createAudio(scene);
 const uiModel = createUI(scene);
 createActions(scene, objects, uiModel);
 createShadows(scene, objects)

@@ -16,6 +16,7 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener("install", (event) => {
     console.log('installs', event);
+    /*
     event.waitUntil(
         addResourcesToCache([
             "./index.html",
@@ -38,5 +39,6 @@ self.addEventListener("install", (event) => {
 
         ])
     )
+    */
 
 });

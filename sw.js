@@ -6,7 +6,7 @@ const addResourcesToCache = async (resources) => {
 };
 
 self.addEventListener('fetch', function (event) {
-    console.log('fetching:' + event);
+    console.log('fetchinge:', event);
 });
 
 self.addEventListener('activate', function(event) {
@@ -40,5 +40,4 @@ self.addEventListener("install", (event) => {
         ])
     )
     */
-
 });

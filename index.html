@@ -1,30 +1,47 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-        <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
+<head>
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()">
 
-        <style>
-            html,
-            body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-                text-align: center;
-            }
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            outline: none;
+        }
 
-            #renderCanvas {
-                width: 100%;
-                height: 100%;
-                touch-action: none;
-            }
-        </style>
-    <link rel="icon" href="hiirulaisicon.png"><script defer src="index.js"></script><script defer src="sw.js"></script><link rel="manifest" href="./manifest.8fe31604cf7a9b87bb225d482020b5eb.json" /></head>
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            outline: none;
+            -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+            z-index: -1;
+        }
+    </style>
+<link rel="icon" href="hiirulaisicon.png"><script defer src="index.js"></script><script defer src="sw.js"></script><link rel="manifest" href="./manifest.8fe31604cf7a9b87bb225d482020b5eb.json" /></head>
 
-    <body>
-        <canvas id="renderCanvas"></canvas>
-    </body>
+<body>
+    <canvas id="renderCanvas"></canvas>
+</body>
 
 </html>

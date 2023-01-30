@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs';
 import * as GUI from 'babylonjs-gui';
-import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, EventState, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, ISoundOptions, Mesh, MeshBuilder, PhysicsImpostor, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
+import { AbstractMesh, ActionEvent, ActionManager, ArcFollowCamera, ArcRotateCamera, AssetsManager, CannonJSPlugin, Color3, Color4, ConeParticleEmitter, Engine, EventState, ExecuteCodeAction, FollowCamera, FreeCamera, HemisphericLight, ISoundOptions, Mesh, MeshBuilder, PhysicsImpostor, PointerEventTypes, PointerInfoBase, Quaternion, Scalar, Scene, Vector2, Vector3 } from 'babylonjs';
 import { Player } from './prefabs/player';
 import { Path } from './prefabs/path';
 import { UIModel } from './models/ui.model';
@@ -40,22 +40,71 @@ var engine: Engine = new Engine(canvas, true);
 
 function createScene(engine: BABYLON.Engine): Scene {
   let hiirulainenScene = new HiirulainenScene(engine);
+  hiirulainenScene.preventDefaultOnPointerDown = true;
+  hiirulainenScene.preventDefaultOnPointerUp = true;
   return hiirulainenScene;
 }
 let verticalAxis = 0,
   horizontalAxis = 0,
+  xTarget = 0,
+  zTarget = 0,
   tryJump = false,
   moveVector = Vector3.Zero();
 
-function createKeyboardActions(scene: Scene, player: Player): void {
-  const speedAmount = 0.3;
+function createInputControls(scene: Scene, player: Player): void {
+  scene.preventDefaultOnPointerDown = true;
+  scene.preventDefaultOnPointerUp = true;
+  const keyboardControlsToActionsMap = {
+    "ArrowDown": "Down",
+    "ArrowUp": "Up",
+    "ArrowRight": "Right",
+    "ArrowLeft": "Left",
+    " ": "Jump"
+  };
+
+  const inputControlsMap = {
+    "Down": false,
+    "Up": false,
+    "Left": false,
+    "Right": false,
+    "Jump": false
+  };
+
+  scene.onPointerObservable.add((pointerInfo: BABYLON.PointerInfo) => {
+
+    if (pointerInfo.type === PointerEventTypes.POINTERDOUBLETAP) {
+      inputControlsMap["Jump"] = true;
+      xTarget = 0;
+      zTarget = 0;
+    } else if (pointerInfo.type === PointerEventTypes.POINTERDOWN) {
+      inputControlsMap["Jump"] = false;
+      const ray = pointerInfo.pickInfo.ray;
+      let hit = scene.pickWithRay(ray);
+      if (hit.pickedMesh.id) {
+        xTarget = hit.pickedPoint.x - player.position.x;
+        zTarget = hit.pickedPoint.z - player.position.z;
+      }
+    }
+
+    else if (pointerInfo.type === PointerEventTypes.POINTERUP) {
+      xTarget = 0;
+      zTarget = 0;
+      inputControlsMap["Jump"] = false;
+
+    } else {
+      inputControlsMap["Jump"] = false;
+
+    }
+  });
+
+
   scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
     trigger: BABYLON.ActionManager.OnKeyDownTrigger,
     parameter: ' '
   },
     () => {
       console.log('SPACE button was pressed');
-      tryJump = true;
+      inputControlsMap["Jump"] = true;
     })
   );
   let
@@ -63,53 +112,78 @@ function createKeyboardActions(scene: Scene, player: Player): void {
     horizontal = 0;
   scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger,
     (event: BABYLON.ActionEvent) => {
-      switch (event.sourceEvent?.key) {
-        case 'ArrowUp':
-        case 'ArrowDown':
-          vertical = 0;
-          verticalAxis = 0;
-          break;
-        case ' ':
-          tryJump = false;
-          break;
-        case 'ArrowLeft':
-        case 'ArrowRight':
-          horizontal = 0;
-          horizontalAxis = 0;
-          break;
-        default:
-          break;
+      if (!keyboardControlsToActionsMap[event.sourceEvent?.key]) {
+        console.warn("keyboard key not mapped: " + event.sourceEvent.key);
+        return;
       }
+      inputControlsMap[keyboardControlsToActionsMap[event.sourceEvent.key]] = false;
     }));
+
+
   scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger,
     (event: BABYLON.ActionEvent) => {
-      const lerpAmount = 1;
-      switch (event.sourceEvent?.key) {
-        case 'ArrowUp':
-          vertical = Scalar.Lerp(vertical, speedAmount, lerpAmount);
-          verticalAxis = 1;
-          break;
-        case 'ArrowDown':
-          vertical = Scalar.Lerp(vertical, -speedAmount, lerpAmount);
-          verticalAxis = -1;
-          break;
-        case 'ArrowRight':
-          horizontal = Scalar.Lerp(horizontal, speedAmount, lerpAmount);
-          horizontalAxis = 1;
-          break;
-        case "ArrowLeft":
-          horizontal = Scalar.Lerp(horizontal, -speedAmount, lerpAmount);
-          horizontalAxis = -1;
-          break;
-        default:
-          // horizontal = 0, horizontalAxis = 0, vertical = 0, verticalAxis = 0;
-          break;
+      if (!keyboardControlsToActionsMap[event.sourceEvent?.key]) {
+        console.warn("keyboard key not mapped: " + event.sourceEvent.key);
+        return;
       }
+      inputControlsMap[keyboardControlsToActionsMap[event.sourceEvent.key]] = true;
     }));
-  scene.onBeforeRenderObservable.add(() => {
-    moveVector = new Vector3(horizontal, 0, vertical).scaleInPlace(0.5);
-    player.fixRotation();
 
+  function updateControls() {
+    const lerpAmount = 0.2;
+    const lerpAmountSlow = 0.8;
+
+    if (inputControlsMap["Up"]) {
+      vertical = Scalar.Lerp(vertical, 1, lerpAmount);
+      verticalAxis = 1;
+
+    } else if (inputControlsMap["Down"]) {
+      vertical = Scalar.Lerp(vertical, -1, lerpAmount);
+      verticalAxis = -1;
+    } else {
+      vertical = 0;
+      verticalAxis = 0;
+    }
+
+    if (inputControlsMap["Left"]) {
+      horizontal = Scalar.Lerp(horizontal, -1, lerpAmountSlow);
+      horizontalAxis = -1;
+
+    } else if (inputControlsMap["Right"]) {
+      horizontal = Scalar.Lerp(horizontal, 1, lerpAmount);
+      horizontalAxis = 1;
+    }
+    else {
+      horizontal = 0;
+      horizontalAxis = 0;
+    }
+
+    if (inputControlsMap["Jump"]) {
+      tryJump = true;
+    } else {
+      tryJump = false;
+    }
+  }
+
+  scene.onBeforeRenderObservable.add(() => {
+    updateControls();
+    const scaleFactor = 0.2;
+    moveVector = new Vector3(horizontal, 0, vertical).normalize().scaleInPlace(scaleFactor);
+    const pointerVector = new Vector3(xTarget, 0, zTarget).normalize();
+    console.log('pointer vector', pointerVector);
+    if (pointerVector.length() > 0) {
+      horizontalAxis = pointerVector.x;
+      verticalAxis = pointerVector.z;
+      moveVector = pointerVector.scaleInPlace(scaleFactor);
+
+    }
+    /*
+    if (xTarget > 0 || zTarget > 0) {
+      moveVector = new Vector3(xTarget, 0, zTarget).normalize().scaleInPlace(0.1);
+    }
+    console.log('final move vector', moveVector)
+    player.fixRotation();
+  */
   });
 
 }
@@ -168,7 +242,7 @@ function createPickableActions({ scores }: UIModel, { collectibles, player }: Ob
 
 function createActions(scene: Scene, objects: ObjectsModel, ui: UIModel): void {
   const { player, ground } = objects;
-  createKeyboardActions(scene, player);
+  createInputControls(scene, player);
   createColliderActions(scene, objects);
   //createPickableActions(ui, objects);
 }
@@ -406,16 +480,6 @@ function createEnvironment(scene: Scene): ObjectsModel {
     collectibles,
     piilotettavat: maikit
   };
-
-
-  /*
-  player.mesh.physicsImpostor.registerOnPhysicsCollide(terrain.mesh.physicsImpostor, (collider: PhysicsImpostor, collideAgainst: PhysicsImpostor) => {
-    console.log('collide against:'+collideAgainst);
-
-  });
-  */
-
-
 
 }
 

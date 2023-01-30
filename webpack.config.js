@@ -10,6 +10,7 @@ module.exports = merge(common, {
         },
         compress: true,
         port: 9000,
+        host: '0.0.0.0',
         open: true,
         hot: true
     },

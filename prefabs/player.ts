@@ -13,10 +13,7 @@ export class Player extends AbstractHiiriObject {
 
   private jumping = false;
   private readonly impulse = 100;
-  toggleJump(jumping: boolean) {
-    this.jumping = jumping;
-  }
-
+ 
   constructor(scene: Scene) {
     super(scene, "hiirulainen");
     this.mesh.actionManager = new ActionManager(scene);
@@ -26,8 +23,12 @@ export class Player extends AbstractHiiriObject {
     //meshHiirulainen.physicsImpostor= new PhysicsImpostor(boxCollider, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 10   });
     //boxCollider.addChild(this.mesh);
 
-
   }
+
+  toggleJump(jumping: boolean) {
+    this.jumping = jumping;
+  }
+
 
   fixRotation() {
     this.mesh.rotation.z = 0;

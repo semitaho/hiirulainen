@@ -8,5 +8,9 @@ export interface Piilotettava {
 
   getMesh(): Mesh;
 
+  get missing(): boolean;
+
+  setLoydetty(): void;
+
 
 }

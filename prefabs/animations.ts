@@ -90,6 +90,32 @@ export function createHulahula(): BABYLON.Animation {
 
 }
 
+export function ampaiseVittuun(startY: number): BABYLON.Animation {
+  const animWheel = new BABYLON.Animation("ampaise", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE);
+  const wheelKeys = [];
+
+  //At the animation key 0, the value of rotation.y is 0
+  wheelKeys.push({
+    frame: 0,
+    value: startY
+  });
+
+  //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
+  wheelKeys.push({
+    frame: 15,
+    value: 10
+  });
+
+  //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
+  wheelKeys.push({
+    frame: DEFAULT_FRAMERATE,
+    value: 20
+  });
+
+  animWheel.setKeys(wheelKeys);
+  return animWheel;
+}
+
 export function createRenkaanPyoriminen(): BABYLON.Animation {
   const animWheel = new BABYLON.Animation("wheelAnimation", "rotation.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const wheelKeys = [];

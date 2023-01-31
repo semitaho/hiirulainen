@@ -2,10 +2,12 @@ import { Color3, Mesh, PhysicsImpostor, Scene, StandardMaterial, Vector3 } from 
 import { TransformNode, Vector2 } from "babylonjs/index";
 import { Piilotettava } from "../../models/piilotettava.interface";
 import { AbstractHiiriObject } from "../abstract-hiiri.object";
+import { ampaiseVittuun } from "../animations";
 
 export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 
   private piilopaikka: Vector2;
+  private _missing = true;
   constructor(private scene: Scene, direction: number) {
     super(scene, "maikki", false);
 
@@ -27,8 +29,15 @@ export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 
     }
     this.mesh.scaling = new Vector3(0.9, 0.9, 0.9);
+    this.mesh.animations = [ampaiseVittuun(this.position.y)];
     this.mesh.physicsImpostor = null;
 
+  }
+  get missing(): boolean {
+    return this._missing;
+  }
+  setLoydetty(): void {
+     this._missing = false;
   }
   setPiilopaikka(piilopaikka: Vector2) {
     this.piilopaikka = piilopaikka;
@@ -45,7 +54,7 @@ export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 
 
   createBoxVector(): Vector3 {
-    return new Vector3(4,3,4);
+    return new Vector3(1,3,1);
   }
   protected createVartalo(): Mesh {
     const vartalo = super.createVartalo();

@@ -7,7 +7,7 @@ import { AbstractHiiriObject } from './abstract-hiiri.object';
 export class Player extends AbstractHiiriObject {
 
   createBoxVector(): Vector3 {
-    return new Vector3(3,3,3);
+    return new Vector3(1,3,1);
   }
 
   private jumping = false;

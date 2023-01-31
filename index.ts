@@ -14,7 +14,7 @@ import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { HiirulainenScene } from './prefabs/hiirulainen.scene';
-import { createRenkaanPyoriminen } from './prefabs/animations';
+import { ampaiseVittuun, createRenkaanPyoriminen } from './prefabs/animations';
 const registerServiceWorker = async () => {
   if ("serviceWorker" in navigator) {
     try {
@@ -187,7 +187,7 @@ function createInputControls(scene: Scene, player: Player): void {
 
 }
 
-function createColliderActions(scene: Scene, { player, aiti }: ObjectsModel): void {
+function createColliderActions(scene: Scene, { player, piilotettavat }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(objects.ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
   });
@@ -195,27 +195,27 @@ function createColliderActions(scene: Scene, { player, aiti }: ObjectsModel): vo
   player.mesh.physicsImpostor.registerOnPhysicsCollide(objects.ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
   });
+  
+
 
 }
 
-function createPickableActions({ scores }: UIModel, { collectibles, player }: ObjectsModel): void {
-  collectibles.forEach(collectible => {
+function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettavat, player }: ObjectsModel): void {
+  piilotettavat.forEach(piilotettava => {
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
-      parameter: collectible.mesh
+      parameter: piilotettava.getMesh()
     },
       (event: ActionEvent) => {
-        createHiirulainenAudio("pickup.mp3", scene, {
-          //autoplay: true,
-          length: 0.3,
-          volume: 0.1
-        });
-        collectible.mesh.dispose(false, true);
-        collectible.mesh = null;
-        scores.text = (parseInt(scores.text, 10) + collectible.points).toString();
+
+        piilotettava.setLoydetty();
+        scene.beginAnimation(piilotettava.getMesh(), 0, 30, false);
+        //piilotettava.getMesh().dispose(false, true);
+        scores.text = (parseInt(scores.text, 20) + 1).toString();
         player.mesh.actionManager.unregisterAction(iaction);
 
         // Create a particle system
+        /*
         const particleSystem = new BABYLON.ParticleSystem("particles", 60000, scene);
         // Speed
         particleSystem.minEmitPower = 55;
@@ -233,6 +233,7 @@ function createPickableActions({ scores }: UIModel, { collectibles, player }: Ob
         particleSystem.color2 = new Color4(0, 1, 0, 1);
         particleSystem.start();
         particleSystem.targetStopDuration = 0.5;
+        */
       }));
   });
 
@@ -243,7 +244,7 @@ function createActions(scene: Scene, objects: ObjectsModel, ui: UIModel): void {
   const { player, ground } = objects;
   createInputControls(scene, player);
   createColliderActions(scene, objects);
-  //createPickableActions(ui, objects);
+  createPickableActions(scene, ui, objects);
 }
 
 function createShadows(scene: Scene, objects: ObjectsModel): void {
@@ -259,7 +260,7 @@ function createShadows(scene: Scene, objects: ObjectsModel): void {
 
 function createUI(scene: Scene): UIModel {
   var ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI("ui");
-  const textBlock = new GUI.TextBlock("score", "5");
+  const textBlock = new GUI.TextBlock("score", "0");
   textBlock.color = "yellow";
   textBlock.fontSize = "50";
   textBlock.fontWeight = "bold";
@@ -363,42 +364,6 @@ function startLaskeminen(scene: Scene) {
   }).then((newAudio: HiirulainenAudio) => {
     newAudio.play(2);
   });
-
-  /*
-   () => {
-     console.log('hei vaan!');
-     const audio3 = new HiirulainenAudio("Kolme.m4a", scene);
-     const audio4 = new HiirulainenAudio("Nelja.m4a", scene);
-     const audio5 = new HiirulainenAudio("Viisi.m4a", scene, null, {
-     });
-     const tullaan = new HiirulainenAudio("Tullaan.m4a", scene, null);
-     audio.onEndedObservable.add(() => {
-       console.log("valmix yksf");
-      
-       const audio2 = new HiirulainenAudio("Kaksi.m4a", scene, () => {
-         audio2.play(1.5);
-         audio2.onEndedObservable.add(() => {
-           audio3.play(1.5);
-           audio3.onEndedObservable.add(() => {
-             audio4.play(1.5);
-             audio4.onEndedObservable.add(() => {
-               audio5.play(1.5);
-               audio5.onEndedObservable.add(() => {
-                 tullaan.play(1.5);
-
-               })
-
-             });
-
-           });
-         });
-         
-
-       });
-       
-     });
-    // audio.play();
-    */
 }
 function createAudio(scene: Scene): void {
 
@@ -545,9 +510,10 @@ scene.registerBeforeRender(() => {
   } else {
     // aiti.moveTowards(path.getCurrentWaypoint(), camera);
   }
-  piilotettavat.forEach(piilotettava => {
+  piilotettavat
+  .filter(piilotettava => piilotettava.missing)
+  .forEach(piilotettava => {
     moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);
-
   });
 
 });

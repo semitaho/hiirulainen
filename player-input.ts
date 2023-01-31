@@ -70,7 +70,6 @@ export class PlayerInput {
     }
     this.moveDirection =  new Vector3(this.horizontal, 0, this.vertical); //this._moveDirection.scaleInPlace(this._inputAmt * Player.PLAYER_SPEED);
     this.moveDirection = this.moveDirection.scaleInPlace(0.2);
-    console.log("move", this.moveDirection);
   
   }
 }

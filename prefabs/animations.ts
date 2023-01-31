@@ -21,6 +21,56 @@ export function createKasienheiluttelu(direction: number): BABYLON.Animation {
   return kasienheiluttelu;
 }
 
+export function createHulahula(): BABYLON.Animation {
+  const animHulahula = new BABYLON.Animation("hulahulaAnimation", "rotation.z", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+
+  const animParams = [[0, 1], [30, -1]];
+  let allKeys = [];
+  animParams
+    .forEach(param => {
+      const frameAdder = param[0] as number;
+      const valueMultiplier = param[1] as number;
+      const keys = [{
+        frame: 0 + frameAdder,
+        value: 0 * valueMultiplier
+      }, {
+        frame: 8 + frameAdder,
+        value: Math.PI / 8 * valueMultiplier
+      },
+
+      {
+        frame: 12+ frameAdder,
+        value: 0 * valueMultiplier
+      },
+
+      {
+        frame: 16 + frameAdder,
+        value: 0 * valueMultiplier
+      },
+
+      {
+        frame: 22 +frameAdder,
+        value: Math.PI / 8 * valueMultiplier
+      },
+
+      {
+        frame: 26 + frameAdder,
+        value: 0
+      },
+      {
+        frame: 30 + frameAdder,
+        value: 0
+      }
+    ];
+    allKeys = allKeys.concat(keys);
+
+    });
+
+  animHulahula.setKeys(allKeys);
+  return animHulahula;
+
+}
+
 export function createRenkaanPyoriminen(): BABYLON.Animation {
   const animWheel = new BABYLON.Animation("wheelAnimation", "rotation.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const wheelKeys = [];

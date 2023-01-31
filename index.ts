@@ -9,6 +9,7 @@ import { AutoObject, NurmikkoObject, TimanttiObject, TaloObject, RoadObject, Mul
 import { calculateWidth, moveTowards } from './utils/geometry.util';
 import { AitiObject } from './prefabs/aiti.object';
 import { MaikkiObject } from './prefabs/maikki.object';
+import { OrvokkiObject } from './prefabs/kaverit/orvokki.object';
 import { ObjectsModel } from './models/objects.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
@@ -418,6 +419,12 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
   const collectibles = [];
   const bounds = ground.getBounds();
+  for (let i = 0; i < 5; i++) {
+    const orvokkiObject = new OrvokkiObject(scene);
+    orvokkiObject.setPosition(40 + (i * 3), 2, 50);
+  
+  }
+  
   for (let i = 0; i < 15; i++) {
     const collectible = new TimanttiObject(scene, i);
     collectible.mesh.animations.push(createRenkaanPyoriminen());

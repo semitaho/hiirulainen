@@ -5,16 +5,18 @@ import * as BABYLON from 'babylonjs';
 export abstract class AbstractHiiriObject {
 
   public mesh: BABYLON.Mesh;
+  public vartaloMesh: Mesh;
+
   private readonly mass = 20;
 
   constructor(scene: Scene, private name: string, usePhysics = true) {
     const { x, y, z } = this.createBoxVector();
     this.mesh = BABYLON.MeshBuilder.CreateBox(this.name, { width: x, height: y, depth: z });
     this.mesh.visibility = 0;
-    const vartalo = this.createVartalo();
-    const meshPaa = this.createPaa(vartalo);
-    this.createKasi("kasi1", vartalo, -1, scene);
-    this.createKasi("kasi2", vartalo, 1, scene);
+    this.vartaloMesh = this.createVartalo();
+    const meshPaa = this.createPaa(this.vartaloMesh);
+    this.createKasi("kasi1", this.vartaloMesh, -1, scene);
+    this.createKasi("kasi2", this.vartaloMesh, 1, scene);
     this.createSilma("silma1", meshPaa, -1);
     this.createSilma("silma2", meshPaa, 1);
     this.createKorva("korva1", meshPaa, 1);

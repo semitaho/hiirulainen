@@ -1,28 +1,48 @@
-import { Color3, Mesh, PBRMaterial, PhysicsImpostor, Scene, StandardMaterial, TransformNode, Vector3 } from "babylonjs";
-import { create } from "domain";
+import { Color3, Mesh, PBRMaterial, PhysicsImpostor, Quaternion, Scene, StandardMaterial, TransformNode, Vector3 } from "babylonjs";
 import { AbstractHiiriObject } from "../abstract-hiiri.object";
-import { createHulahula } from "../animations";
+import { createHulahula, moveKasi } from "../animations";
 import { HiirulainenTerrain } from "../hiirulainen.terrain";
 
 export class OrvokkiObject extends AbstractHiiriObject {
   constructor(private scene: Scene) {
     super(scene, "orvokki", false);
-    this.mesh.setDirection(new Vector3(0,0,-1));
+    this.mesh.setDirection(new Vector3(0, 0, -1));
     this.mesh.physicsImpostor = null;
-    this.createAndBeginHulaHulaAnimation();
+    this.createHulaHulaAnimation();
+    this.createKasiMovingAnimation();
+    this.fireAnimations();
+
+    this.mesh.rotationQuaternion = Quaternion.Zero();
   }
+  
 
 
   public createBoxVector(): Vector3 {
-    return new Vector3(4,2,4);
+    return new Vector3(4, 2, 4);
   }
-  private createAndBeginHulaHulaAnimation(): void {
+  private createHulaHulaAnimation(): void {
     const animation = createHulahula();
     this.vartaloMesh.animations = [];
     this.vartaloMesh.animations.push(animation);
+    
+  }
+
+  private fireAnimations(): void {
     const animationRandom = HiirulainenTerrain.randomIntFromInterval(500, 2000);
-    setTimeout(() =>
-    this.scene.beginAnimation(this.vartaloMesh, 0, 60, true), animationRandom);
+    setTimeout(() => {
+      this.scene.beginAnimation(this.vartaloMesh, 0, 60, true);
+      this.scene.beginAnimation(this.leftKasiMesh, 0, 30, true);
+      this.scene.beginAnimation(this.rightKasiMesh, 0, 30, true);
+    },
+      animationRandom
+    );
+  }
+
+  createKasiMovingAnimation() {
+    this.leftKasiMesh.animations = [moveKasi(1)];
+    this.scene.beginAnimation(this.leftKasiMesh, 0, 30, true);
+    this.rightKasiMesh.animations = [moveKasi(-1)];
+
   }
 
   protected createVartalo(): Mesh {

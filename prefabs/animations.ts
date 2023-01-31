@@ -21,6 +21,25 @@ export function createKasienheiluttelu(direction: number): BABYLON.Animation {
   return kasienheiluttelu;
 }
 
+
+export function moveKasi(direction: number): BABYLON.Animation {
+  const keys = [{
+    frame: 0,
+    value: 0
+  }, {
+    frame: 15,
+    value: (Math.PI / 4)*direction
+  },
+  {
+    frame: 30,
+    value: 0
+  }];
+  const kasiheiluu = new BABYLON.Animation("kasitheiluuAnimation", "rotation.x", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+  kasiheiluu.setKeys(keys);
+  return kasiheiluu;
+
+
+}
 export function createHulahula(): BABYLON.Animation {
   const animHulahula = new BABYLON.Animation("hulahulaAnimation", "rotation.z", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
 
@@ -39,7 +58,7 @@ export function createHulahula(): BABYLON.Animation {
       },
 
       {
-        frame: 12+ frameAdder,
+        frame: 12 + frameAdder,
         value: 0 * valueMultiplier
       },
 
@@ -49,7 +68,7 @@ export function createHulahula(): BABYLON.Animation {
       },
 
       {
-        frame: 22 +frameAdder,
+        frame: 22 + frameAdder,
         value: Math.PI / 8 * valueMultiplier
       },
 
@@ -61,8 +80,8 @@ export function createHulahula(): BABYLON.Animation {
         frame: 30 + frameAdder,
         value: 0
       }
-    ];
-    allKeys = allKeys.concat(keys);
+      ];
+      allKeys = allKeys.concat(keys);
 
     });
 

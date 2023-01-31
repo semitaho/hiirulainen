@@ -6,6 +6,8 @@ export abstract class AbstractHiiriObject {
 
   public mesh: BABYLON.Mesh;
   public vartaloMesh: Mesh;
+  public leftKasiMesh: Mesh;
+  public rightKasiMesh: Mesh;
 
   private readonly mass = 20;
 
@@ -15,8 +17,8 @@ export abstract class AbstractHiiriObject {
     this.mesh.visibility = 0;
     this.vartaloMesh = this.createVartalo();
     const meshPaa = this.createPaa(this.vartaloMesh);
-    this.createKasi("kasi1", this.vartaloMesh, -1, scene);
-    this.createKasi("kasi2", this.vartaloMesh, 1, scene);
+    this.leftKasiMesh = this.createKasi("kasi1", this.vartaloMesh, -1, scene);
+    this.rightKasiMesh = this.createKasi("kasi2", this.vartaloMesh, 1, scene);
     this.createSilma("silma1", meshPaa, -1);
     this.createSilma("silma2", meshPaa, 1);
     this.createKorva("korva1", meshPaa, 1);
@@ -59,10 +61,12 @@ export abstract class AbstractHiiriObject {
     newMesh.rotation.x = BABYLON.Tools.ToRadians(-20);
     newMesh.setPositionWithLocalVector(new Vector3((newMesh.getBoundingInfo().boundingSphere.radius + 0.2) * direction, 0, 0.2));
     const frameRate = 50;
+    /*
     const kasienheiluttelu = createKasienheiluttelu(direction);
     newMesh.animations.push(kasienheiluttelu);
     scene.beginAnimation(newMesh, 0, 2 * frameRate, true);
-    return kasi;
+    */
+    return newMesh;
   }
 
 

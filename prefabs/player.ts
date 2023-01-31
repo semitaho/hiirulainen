@@ -6,7 +6,6 @@ import { AbstractHiiriObject } from './abstract-hiiri.object';
 
 export class Player extends AbstractHiiriObject {
 
-  public vartaloMesh: Mesh;
   createBoxVector(): Vector3 {
     return new Vector3(3,3,3);
   }

@@ -6,10 +6,9 @@ import { Path } from './prefabs/path';
 import { UIModel } from './models/ui.model';
 import { AutoObject, NurmikkoObject, TimanttiObject, TaloObject, RoadObject, MultaObject } from './prefabs/environment/';
 
-import { calculateWidth, moveTowards } from './utils/geometry.util';
+import { calculateWidth, moveTowards, rotateTowards } from './utils/geometry.util';
 import { AitiObject } from './prefabs/aiti.object';
-import { MaikkiObject } from './prefabs/maikki.object';
-import { OrvokkiObject } from './prefabs/kaverit/orvokki.object';
+import { MaikkiObject, OrvokkiObject } from './prefabs/kaverit';
 import { ObjectsModel } from './models/objects.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
@@ -171,7 +170,6 @@ function createInputControls(scene: Scene, player: Player): void {
     const scaleFactor = 0.2;
     moveVector = new Vector3(horizontal, 0, vertical).normalize().scaleInPlace(scaleFactor);
     const pointerVector = new Vector3(xTarget, 0, zTarget).normalize();
-    console.log('pointer vector', pointerVector);
     if (pointerVector.length() > 0) {
       horizontalAxis = pointerVector.x;
       verticalAxis = pointerVector.z;
@@ -419,12 +417,24 @@ function createEnvironment(scene: Scene): ObjectsModel {
 
   const collectibles = [];
   const bounds = ground.getBounds();
-  for (let i = 0; i < 5; i++) {
+  const orvokit = [];
+  for (let i = 0; i < 10; i++) {
     const orvokkiObject = new OrvokkiObject(scene);
     orvokkiObject.setPosition(40 + (i * 3), 2, 50);
-  
+    orvokit.push(orvokkiObject);
   }
-  
+
+  scene.onBeforeRenderObservable.add(() => {
+    orvokit.forEach(orvokki => {
+      const direction = player.mesh.position.subtract(orvokki.mesh.position);
+      orvokki.mesh.rotationQuaternion = Quaternion.Slerp(orvokki.mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
+    });
+
+  });
+
+
+
+
   for (let i = 0; i < 15; i++) {
     const collectible = new TimanttiObject(scene, i);
     collectible.mesh.animations.push(createRenkaanPyoriminen());
@@ -478,8 +488,6 @@ function createEnvironment(scene: Scene): ObjectsModel {
   createTrees(scene);
   createGrass(scene);
   createCars(scene);
-
-
   return {
     player,
     ground,

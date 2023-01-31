@@ -77,8 +77,6 @@ export class AutoObject extends EnvironmentObject {
     wheelMesh.animations = [];
     wheelMesh.animations.push(animation);
     this.scene.beginAnimation(wheelMesh, 0, 30, true);
-    
-
   }
 
 

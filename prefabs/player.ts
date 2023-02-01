@@ -1,7 +1,5 @@
 import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3, ActionManager } from "babylonjs";
 import * as BABYLON from 'babylonjs';
-import { PlayerInput } from "../player-input";
-import { HiirulainenScene } from "./hiirulainen.scene";
 import { AbstractHiiriObject } from './abstract-hiiri.object';
 
 export class Player extends AbstractHiiriObject {

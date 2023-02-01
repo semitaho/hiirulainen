@@ -2,14 +2,12 @@ import { Color3, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Te
 import { EnvironmentObject } from './environment.object';
 export class TaloObject extends EnvironmentObject {
 
-
+  public perustuksetMesh: Mesh;
   constructor(scene: Scene, scaleFactor: number = 1) {
     super("talo" + Math.random());
-
-
-    this.createPerustukset().parent = this.mesh;
+    this.perustuksetMesh = this.createPerustukset();
+    this.perustuksetMesh.parent = this.mesh;
     this.createKatto().parent = this.mesh;
-    //this.mesh.scaling = new Vector3(scaleFactor, scaleFactor, scaleFactor);
   }
 
 
@@ -41,7 +39,6 @@ export class TaloObject extends EnvironmentObject {
     });
 
     return box;
-
   }
 
   createKatto(): Mesh {

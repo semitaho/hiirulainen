@@ -27,9 +27,7 @@ export abstract class AbstractHiiriObject {
       this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
         mass: this.mass,
         restitution: 0,
-        friction: 1,
-
-
+        friction: 0.5,
       });
     }
   }

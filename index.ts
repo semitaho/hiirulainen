@@ -96,6 +96,7 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat }:
     const direction = player.mesh.position.subtract(orvokki.mesh.position);
     orvokki.mesh.rotationQuaternion = Quaternion.Slerp(orvokki.mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
   });
+  player.mesh.physicsImpostor.setAngularVelocity(player.mesh.physicsImpostor.getAngularVelocity().scale(0))
 
   piilotettavat
     .filter(piilotettava => piilotettava.missing)

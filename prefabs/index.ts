@@ -86,11 +86,23 @@ export function createEnvironment(scene: Scene): ObjectsModel {
     });
     new RoadObject(scene);
     const maikit = [];
-    const piilopaikat = [new Vector2(-40, 20), new Vector2(0, -90), new Vector2(-5, -85), new Vector2(-60, 30)];
-    for (let i = 0; i <= 10; i++) {
+    const piilopaikat = [
+        new Vector2(-40, 20), 
+        new Vector2(-45, 35), 
+        new Vector2(0, -90), 
+        new Vector2(-5, -85), 
+        new Vector2(-60, 30),
+        new Vector2(-80, 20),
+        new Vector2(-80, 60),
+        new Vector2( 80, 60),
+        new Vector2( 70, -60),
+        new Vector2( 40, 40),
+    
+    ];
+    for (let i = 0; i < 10; i++) {
         const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
         maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(24, 35), 1.5, HiirulainenTerrain.randomIntFromInterval(26, 43));
-        maikki.setPiilopaikka(piilopaikat[HiirulainenTerrain.randomIntFromInterval(0, piilopaikat.length - 1)]);
+        maikki.setPiilopaikka(piilopaikat[i]);
         maikit.push(maikki);
     }
     createTrees(scene);

@@ -9,6 +9,9 @@ import { createEnvironment } from './prefabs';
 import { ObjectsModel } from './models/objects.model';
 import { createInputControls } from './core/player.input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
+import { AudiosModel } from './models/audios.model';
+import { HiirulainenAudio } from './audio/hiirulainen.audio';
+import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
 
 function createColliderActions(scene: Scene, { player, piilotettavat, ground }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
@@ -20,7 +23,8 @@ function createColliderActions(scene: Scene, { player, piilotettavat, ground }: 
   });
 }
 
-function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettavat, player }: ObjectsModel): void {
+function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettavat, player }: ObjectsModel, { loytyi }: AudiosModel): void {
+  
   piilotettavat.forEach(piilotettava => {
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
@@ -29,6 +33,11 @@ function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettava
       (event: ActionEvent) => {
 
         piilotettava.setLoydetty();
+        loytyi.then((audio: HiirulainenAudio) => {
+          const playbackRate =HiirulainenTerrain.randomIntFromInterval(50, 150) / 100;
+          audio.setPlaybackRate(playbackRate);
+          audio.play();
+        });
         scene.beginAnimation(piilotettava.getMesh(), 0, 30, false);
         //piilotettava.getMesh().dispose(false, true);
         scores.text = (parseInt(scores.text, 20) + 1).toString();
@@ -59,11 +68,11 @@ function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettava
 
 }
 
-function createActions(scene: Scene, camera: HiirulainenCamera, objects: ObjectsModel, ui: UIModel): void {
+function createActions(scene: Scene, camera: HiirulainenCamera, objects: ObjectsModel, audios: AudiosModel, ui: UIModel): void {
   const { player, ground } = objects;
   createInputControls(scene, camera, player);
   createColliderActions(scene, objects);
-  createPickableActions(scene, ui, objects);
+  createPickableActions(scene, ui, objects, audios);
 }
 
 
@@ -72,11 +81,11 @@ function loadGame(engine: Engine): Promise<void> {
   const scene: Scene = createScene(engine);
   new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
   const objects = createEnvironment(scene);
-  loadAudio(scene);
+  const audios = loadAudio(scene);
   const uiModel = createUI(scene);
   let camera: ArcFollowCamera = new HiirulainenCamera(canvas, objects.player, scene);
 
-  createActions(scene, camera, objects, uiModel);
+  createActions(scene, camera, objects, audios, uiModel);
   createShadows(scene, objects)
   let resizeObserver: ResizeObserver = new ResizeObserver(_ => {
     engine.resize()

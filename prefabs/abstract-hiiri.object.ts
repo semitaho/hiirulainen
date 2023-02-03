@@ -9,6 +9,9 @@ export abstract class AbstractHiiriObject {
   public leftKasiMesh: Mesh;
   public rightKasiMesh: Mesh;
 
+  public leftSilmaMesh: Mesh;
+  public rightSilmaMesh: Mesh;
+
   private readonly mass = 20;
 
   constructor(scene: Scene, private name: string, usePhysics = true) {
@@ -19,8 +22,8 @@ export abstract class AbstractHiiriObject {
     const meshPaa = this.createPaa(this.vartaloMesh);
     this.leftKasiMesh = this.createKasi("kasi1", this.vartaloMesh, -1, scene);
     this.rightKasiMesh = this.createKasi("kasi2", this.vartaloMesh, 1, scene);
-    this.createSilma("silma1", meshPaa, -1);
-    this.createSilma("silma2", meshPaa, 1);
+    this.leftSilmaMesh = this.createSilma("silma1", meshPaa, -1);
+    this.rightSilmaMesh = this.createSilma("silma2", meshPaa, 1);
     this.createKorva("korva1", meshPaa, 1);
     this.createKorva("korva2", meshPaa, -1);
     if (usePhysics) {
@@ -104,7 +107,7 @@ export abstract class AbstractHiiriObject {
       diameterY: 0.6,
       diameterZ: 0.4
     });
-    capsule.setPositionWithLocalVector(new Vector3(0.5 * direction, 0.5, -0.8));
+    capsule.setPositionWithLocalVector(new Vector3(0.3 * direction, 0.4, -0.7));
     capsule.parent = parentMesh;
     return capsule;
   }

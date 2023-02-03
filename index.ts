@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs';
-import { ActionEvent, ArcFollowCamera, Engine, HemisphericLight, Quaternion, Scene, Vector3 } from 'babylonjs';
+import { ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, Quaternion, Scene, Vector3 } from 'babylonjs';
 
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
@@ -12,6 +12,8 @@ import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
+import * as GUI from 'babylonjs-gui';
+import { ampaiseVittuun } from './core/animations';
 
 function createColliderActions(scene: Scene, { player, piilotettavat, ground }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
@@ -23,7 +25,7 @@ function createColliderActions(scene: Scene, { player, piilotettavat, ground }: 
   });
 }
 
-function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettavat, player }: ObjectsModel, { loytyi }: AudiosModel): void {
+function createPickableActions(scene: Scene, { scores, ui }: UIModel, { piilotettavat, player }: ObjectsModel, { loytyi }: AudiosModel): void {
   
   piilotettavat.forEach(piilotettava => {
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
@@ -42,6 +44,19 @@ function createPickableActions(scene: Scene, { scores }: UIModel, { piilotettava
         //piilotettava.getMesh().dispose(false, true);
         scores.text = (parseInt(scores.text, 20) + 1).toString();
         player.mesh.actionManager.unregisterAction(iaction);
+        if (scores.text === "3") {
+          player.gameOver();
+          const textBlock = new GUI.TextBlock("score", "Peli päättyi!");
+          textBlock.textVerticalAlignment  = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+          textBlock.paddingBottom = 10;
+          textBlock.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+          textBlock.color = "yellow";
+          textBlock.fontSize = 60;
+          ui.addControl(textBlock);
+          
+          //BABYLON.Animation.CreateAndStartAnimation("fadeout", textBlock, "alpha", 1, 30, 0, 30);
+         // setTimeout(() => ui.removeControl(textBlock), 6000);
+        }
 
         // Create a particle system
         /*
@@ -113,13 +128,22 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat }:
       moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);
     });
 }
-
+let gameOver = false;
 registerServiceWorker();
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
 loadGame(engine).then(_ => {
   console.log('game loaded!');
   engine.hideLoadingUI();
+});
+
+window.addEventListener("click", function () { //si presiono click
+  //si es GameOver
+  if(gameOver)
+  {
+      gameOver = false
+      loadGame(engine);
+  }
 });
 
 

@@ -1,7 +1,7 @@
 import earcut from "earcut";
 import { Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Vector3, Vector4 } from "babylonjs";
 import { EnvironmentObject } from "./environment.object";
-import { createRenkaanPyoriminen } from './../animations';
+import { createRenkaanPyoriminen } from "../../core/animations"; 
 
 export class AutoObject extends EnvironmentObject {
 

@@ -60,6 +60,7 @@ export function createUI(scene: HiirulainenScene): UIModel {
   textBlock2.setPadding("30", null, "30", "30");
   ui.addControl(textBlock2);
   return {
-    scores: textBlock
+    scores: textBlock,
+    ui
   };
 }

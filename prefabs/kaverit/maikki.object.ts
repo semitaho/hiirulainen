@@ -2,7 +2,7 @@ import { Color3, Mesh, PhysicsImpostor, Scene, StandardMaterial, Vector3 } from 
 import { TransformNode, Vector2 } from "babylonjs/index";
 import { Piilotettava } from "../../models/piilotettava.interface";
 import { AbstractHiiriObject } from "../abstract-hiiri.object";
-import { ampaiseVittuun } from "../animations";
+import { ampaiseVittuun } from "../../core/animations";
 
 export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 

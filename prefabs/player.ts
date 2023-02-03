@@ -1,4 +1,4 @@
-import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3, ActionManager } from "babylonjs";
+import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3, ActionManager, Animation, IAnimationKey } from "babylonjs";
 import * as BABYLON from 'babylonjs';
 import { AbstractHiiriObject } from './abstract-hiiri.object';
 
@@ -11,14 +11,95 @@ export class Player extends AbstractHiiriObject {
   private jumping = false;
   private readonly impulse = 100;
  
-  constructor(scene: Scene) {
+  constructor(private scene: Scene) {
     super(scene, "hiirulainen");
     this.mesh.actionManager = new ActionManager(scene);
     this.mesh.setDirection(Vector3.Forward());
 
-
+  
     //meshHiirulainen.physicsImpostor= new PhysicsImpostor(boxCollider, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 10   });
     //boxCollider.addChild(this.mesh);
+
+  }
+  createPomppiminen( mesh: Mesh) {
+    const fps = 60;
+    const timeSlot = 40;
+    const animation = new Animation("pomppiminen", "position.y" , fps, Animation.ANIMATIONTYPE_FLOAT, Animation.ANIMATIONLOOPMODE_CYCLE);
+    const keys: IAnimationKey[] = [
+      {
+        frame: 0,
+        value: mesh.position.y
+      },
+      {
+        frame: timeSlot / 2,
+        value:  mesh.position.y + 0.2
+      },
+      {
+        frame: timeSlot,
+        value:  mesh.position.y
+      }
+    ];
+    
+    animation.setKeys(keys);
+    mesh.animations.push(animation);
+    this.scene.beginAnimation(mesh,0, fps,true);
+  }
+
+  gameOver(): void {
+    this.createPomppiminen(this.leftSilmaMesh);
+    this.createPomppiminen(this.rightSilmaMesh);
+
+    this.createHyvatKadetAnimations(this.leftKasiMesh, -1);
+    this.createHyvatKadetAnimations(this.rightKasiMesh, 1);
+    this.mesh.setDirection(Vector3.Backward());
+  }
+
+  private createHyvatKadetAnimations(mesh: Mesh, direction: number): void  {
+    const fps = 60;
+    const timeSlot = 40;
+    const animation = new Animation("hyvatkadetOikea", "rotation" , fps, Animation.ANIMATIONTYPE_QUATERNION, Animation.ANIMATIONLOOPMODE_CYCLE);
+    
+    const kasienAukaisuKulma = Math.PI / 1.5;
+    const kasienNosto = -direction* Math.PI / 2;
+    const keys: IAnimationKey[] = [
+      {
+        frame: 0,
+        value:   new Quaternion(kasienAukaisuKulma, kasienNosto, 0)
+      
+      },
+
+      {
+        frame: timeSlot / 2,
+        value:   new Quaternion(Math.PI, kasienNosto, direction * Math.PI / 2)
+      },
+      {
+        frame: timeSlot,
+        value:   new Quaternion(kasienAukaisuKulma, kasienNosto, 0)
+      }
+
+    ];
+    mesh.animations.push(animation);
+
+    const positionfixAnimation = new Animation("hyvatkadetPos", "position", fps, Animation.ANIMATIONTYPE_VECTOR3, Animation.ANIMATIONLOOPMODE_CYCLE);
+    const fixedHeight = 0.4;
+    positionfixAnimation.setKeys([{
+      frame: 0,
+      value: new Vector3(direction *0.6,fixedHeight,0.1)
+    },
+    {
+      frame: timeSlot / 2,
+      value: new Vector3(direction* 0.3,fixedHeight,0.1)
+    },
+    {
+      frame: timeSlot,
+      value: new Vector3(direction* 0.6,fixedHeight,0.1)
+    }
+  
+  ])
+    animation.setKeys(keys);
+    mesh.animations.push(positionfixAnimation);
+    this.scene.beginAnimation(mesh, 0, fps, true);
+
 
   }
 

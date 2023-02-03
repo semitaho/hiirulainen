@@ -1,11 +1,10 @@
 import { PhysicsImpostor, Scene, Vector2 } from "babylonjs";
 import { AutoObject, MultaObject, NurmikkoObject, RoadObject, TaloObject, TimanttiObject } from "./environment";
 import { HiirulainenTerrain } from "./hiirulainen.terrain";
-import { MaikkiObject, OrvokkiObject } from "./kaverit";
+import { MaikkiObject, OrvokkiObject, AitiObject } from "./kaverit";
 import { Player } from "./player";
 import { ObjectsModel } from "../models/objects.model";
-import { createRenkaanPyoriminen } from "./animations";
-import { AitiObject } from "./aiti.object";
+import { createRenkaanPyoriminen } from "./../core/animations";
 import { calculateWidth } from "../utils/geometry.util";
 import * as BABYLON from 'babylonjs';
 

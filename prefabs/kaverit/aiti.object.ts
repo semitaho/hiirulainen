@@ -1,7 +1,7 @@
 import { ArcFollowCamera, Camera, PhysicsImpostor, Quaternion, Scene, Vector2, Vector3 } from "babylonjs";
 
-import { AbstractHiiriObject } from './abstract-hiiri.object';
-import { moveTowards } from "../utils/geometry.util";
+import { AbstractHiiriObject } from '../abstract-hiiri.object';
+import { moveTowards } from "../../utils/geometry.util";
  
 
  export class AitiObject extends AbstractHiiriObject {

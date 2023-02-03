@@ -1,6 +1,6 @@
 import { Color3, Mesh, PBRMaterial, PhysicsImpostor, Quaternion, Scene, StandardMaterial, TransformNode, Vector3 } from "babylonjs";
 import { AbstractHiiriObject } from "../abstract-hiiri.object";
-import { createHulahula, moveKasi } from "../animations";
+import { createHulahula, moveKasi } from "../../core/animations";
 import { HiirulainenTerrain } from "../hiirulainen.terrain";
 
 export class OrvokkiObject extends AbstractHiiriObject {

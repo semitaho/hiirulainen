@@ -1,5 +1,4 @@
 import { AbstractMesh, Mesh, PhysicsImpostor, Scene, TransformNode, Vector3 } from "babylonjs";
-import { createKasienheiluttelu } from './animations';
 
 import * as BABYLON from 'babylonjs';
 export abstract class AbstractHiiriObject {

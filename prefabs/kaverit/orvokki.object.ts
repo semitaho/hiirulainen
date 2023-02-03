@@ -11,7 +11,6 @@ export class OrvokkiObject extends AbstractHiiriObject {
     this.createHulaHulaAnimation();
     this.createKasiMovingAnimation();
     this.fireAnimations();
-
     this.mesh.rotationQuaternion = Quaternion.Zero();
   }
   

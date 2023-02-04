@@ -1,0 +1,7 @@
+
+
+export const FALLING_POSITION_WHEN_RESTART = -10;
+
+export const DEFAULT_PICKABLE_HEIGHT_POSITION = 2;
+
+export const DEFAULT_OBJECT_MASS = 0.01;

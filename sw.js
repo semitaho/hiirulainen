@@ -13,6 +13,7 @@ const CACHED_RESOURCES = [
   "audio/Kolme.m4a",
   "audio/Nelja.m4a",
   "audio/Viisi.m4a",
+  "audio/loytyi.m4a",
   "audio/Tullaan.m4a",
   "textures/pear/food_pears_asian_01_diff_4k.jpg",
   "textures/flare_01.png",

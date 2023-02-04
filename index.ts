@@ -12,6 +12,7 @@ import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
+import { FALLING_POSITION_WHEN_RESTART } from "./core/config"; 
 import * as GUI from 'babylonjs-gui';
 
 function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
@@ -39,19 +40,9 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
       pisteet += pickable.points;
       omenaTekstiBlock.text = "Pisteitä: "+pisteet;
       player.mesh.actionManager.unregisterAction(iaction);
-      const currentScale = player.mesh.scaling;
       player.mesh.scaling.scaleInPlace(1.05);
-      const bounding =  player.mesh.getBoundingInfo();
-    //  const positiony = (bounding.maximum.y - bounding.minimum.y) / 2;
-  //    player.mesh.position.y = positiony+0.5;
-      player.mesh.physicsImpostor.dispose();
-      player.mesh.physicsImpostor = new PhysicsImpostor(player.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
-        mass: 10,
-        restitution: 0,
-        friction: 0.5,
-      });
+      player.mesh.physicsImpostor.forceUpdate();
   
-
     }));
   });
   piilotettavat.forEach(piilotettava => {
@@ -71,7 +62,7 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
         //piilotettava.getMesh().dispose(false, true);
         scores.text = (parseInt(scores.text, 20) + 1).toString();
         player.mesh.actionManager.unregisterAction(iaction);
-        if (scores.text === "3") {
+        if (scores.text === "2") {
           player.gameOver();
           const textBlock = new GUI.TextBlock("score", "Peli päättyi!");
           textBlock.textVerticalAlignment  = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
@@ -80,7 +71,8 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
           textBlock.color = "yellow";
           textBlock.fontSize = 60;
           ui.addControl(textBlock);
-          
+          restartGame(scene);
+         
           //BABYLON.Animation.CreateAndStartAnimation("fadeout", textBlock, "alpha", 1, 30, 0, 30);
          // setTimeout(() => ui.removeControl(textBlock), 6000);
         }
@@ -110,12 +102,28 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
 
 }
 
+function restartGame(scene: Scene, timeoutInMillis: number = 3000): void {
+  setTimeout(() => {
+    scene.dispose();
+    loadGame(scene.getEngine())
+    .then(_ => {
+      console.log('game loaded!');
+      engine.hideLoadingUI();
+    });
+    
+
+  }, timeoutInMillis);
+}
+
 function createActions(scene: Scene, camera: HiirulainenCamera, objects: ObjectsModel, audios: AudiosModel, ui: UIModel): void {
   const { player, ground } = objects;
   createInputControls(scene, camera, player);
   createColliderActions(scene, objects);
   createPickableActions(scene, ui, objects, audios);
 }
+
+
+
 
 
 function loadGame(engine: Engine): Promise<void> {
@@ -142,7 +150,12 @@ function loadGame(engine: Engine): Promise<void> {
   return scene.whenReadyAsync(true);
 
 }
+
 function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat }: ObjectsModel): void {
+  if (player.position.y < FALLING_POSITION_WHEN_RESTART) {
+    restartGame(camera.getScene(), 0);
+    return;
+  }
   orvokit.forEach(orvokki => {
     const direction = player.mesh.position.subtract(orvokki.mesh.position);
     orvokki.mesh.rotationQuaternion = Quaternion.Slerp(orvokki.mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
@@ -155,7 +168,6 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat }:
       moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);
     });
 }
-let gameOver = false;
 registerServiceWorker();
 let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
@@ -163,15 +175,3 @@ loadGame(engine).then(_ => {
   console.log('game loaded!');
   engine.hideLoadingUI();
 });
-
-window.addEventListener("click", function () { //si presiono click
-  //si es GameOver
-  if(gameOver)
-  {
-      gameOver = false
-      loadGame(engine);
-  }
-});
-
-
-

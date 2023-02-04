@@ -1,6 +1,7 @@
 import { Color3, MeshBuilder, PhysicsImpostor, Scene, Texture } from "babylonjs";
 import { EnvironmentObject } from "./environment.object";
 import * as BABYLON from 'babylonjs';
+import { TextureMaterial } from "../../textures/texture.material";
 export class ObsticleObject extends EnvironmentObject {
 
   constructor(scene: Scene, textureFile: string) {
@@ -19,10 +20,7 @@ export class ObsticleObject extends EnvironmentObject {
       restitution: 0,
     })
     this.mesh.receiveShadows = true;
-    const material = new BABYLON.StandardMaterial("obsticleMaterial", scene);
-    material.diffuseTexture = new Texture("./textures/"+textureFile, scene);
-
-    this.mesh. material = material;
+    this.mesh.material = new TextureMaterial(scene, "./textures/"+textureFile);;
     
 
 

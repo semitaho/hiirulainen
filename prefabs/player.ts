@@ -9,7 +9,7 @@ export class Player extends AbstractHiiriObject {
   }
 
   private jumping = false;
-  private readonly impulse = 100;
+  private readonly impulse = 0.1;
  
   constructor(private scene: Scene) {
     super(scene, "hiirulainen");

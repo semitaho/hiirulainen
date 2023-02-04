@@ -1,7 +1,9 @@
 import earcut from "earcut";
-import { Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Vector3, Vector4 } from "babylonjs";
+import { Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector3, Vector4 } from "babylonjs";
 import { EnvironmentObject } from "./environment.object";
-import { createRenkaanPyoriminen } from "../../core/animations"; 
+import { createRenkaanPyoriminen } from "../../core/animations";
+import { createDefaultImpostor } from "../../core/physics.core";
+import { TextureMaterial } from "../../textures/texture.material";
 
 export class AutoObject extends EnvironmentObject {
 
@@ -29,47 +31,51 @@ export class AutoObject extends EnvironmentObject {
     faceUV[1] = new Vector4(0, 0, 1, 0.5);
     faceUV[2] = new Vector4(0.38, 1, 0, 0.5);
 
-    //material
-    const carMat = new StandardMaterial("carMat");
-    carMat.diffuseTexture = new Texture("https://assets.babylonjs.com/environments/car.png");
 
     this.mesh = MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2, faceUV, wrap: true }, null, earcut);
-    this.mesh.material = carMat;
+    this.mesh.material = new TextureMaterial(scene, "https://assets.babylonjs.com/environments/car.png");
     this.mesh.rotation.x = -Math.PI / 2;
 
     this.createWheels();
+    this.setScale(12);
+    this.mesh.visibility = 1;
+    this.mesh.position.y = 1.5;
 
   }
 
   private createWheels(): void {
-       //wheel face UVs
-       const wheelUV = [];
-       wheelUV[0] = new BABYLON.Vector4(0, 0, 1, 1);
-       wheelUV[1] = new BABYLON.Vector4(0, 0.5, 0, 0.5);
-       wheelUV[2] = new BABYLON.Vector4(0, 0, 1, 1);
-    const wheelRB = MeshBuilder.CreateCylinder("wheelRB", { diameter: 0.125, height: 0.05, faceUV: wheelUV })
-    wheelRB.parent = this.mesh;
-    wheelRB.position.z = -0.1;
+    //wheel face UVs
+    const wheelUV = [];
+    wheelUV[0] = new BABYLON.Vector4(0, 0, 1, 1);
+    wheelUV[1] = new BABYLON.Vector4(0, 0.5, 0, 0.5);
+    wheelUV[2] = new BABYLON.Vector4(0, 0, 1, 1);
+    const wheelRB = MeshBuilder.CreateCylinder("wheelRB", { diameter: 0.125, height: 0.05, faceUV: wheelUV });
+    wheelRB.position.z = -0.015;
     wheelRB.position.x = -0.2;
-    wheelRB.position.y = 0.035;
-  
+    wheelRB.position.y = -0.05;
+    wheelRB.rotation.x = Math.PI / 2;
+    this.mesh.addChild(wheelRB);
+
     //car material
-    const wheelMat = new StandardMaterial("wheelMat");
-    wheelMat.diffuseTexture = new Texture("https://assets.babylonjs.com/environments/wheel.png");
+    const wheelMat = new TextureMaterial(this.scene, "https://assets.babylonjs.com/environments/wheel.png");
     wheelRB.material = wheelMat;
     const wheelRF = wheelRB.clone("wheelRF");
     wheelRF.material = wheelMat;
     wheelRF.position.x = 0.1;
+    this.mesh.addChild(wheelRF);
 
     const wheelLB = wheelRB.clone("wheelLB");
     wheelLB.position.y = -0.2 - 0.035;
+    this.mesh.addChild(wheelLB);
 
     const wheelLF = wheelRF.clone("wheelLF");
     wheelLF.position.y = -0.2 - 0.035;
+    this.mesh.addChild(wheelLF);
     this.createAndBeginWheelAnimation(wheelLF);
     this.createAndBeginWheelAnimation(wheelRF);
     this.createAndBeginWheelAnimation(wheelLB);
     this.createAndBeginWheelAnimation(wheelRB);
+
   }
 
   private createAndBeginWheelAnimation(wheelMesh: Mesh): void {

@@ -1,9 +1,12 @@
 import { Color3, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector3, Vector4 } from "babylonjs";
 import { EnvironmentObject } from './environment.object';
+
+import { createDefaultImpostor } from './../../core/physics.core';
+import { TextureMaterial } from "../../textures/texture.material";
 export class TaloObject extends EnvironmentObject {
 
   public perustuksetMesh: Mesh;
-  constructor(scene: Scene, scaleFactor: number = 1) {
+  constructor(private scene: Scene, scaleFactor: number = 1) {
     super("talo" + Math.random());
     this.perustuksetMesh = this.createPerustukset();
     this.perustuksetMesh.parent = this.mesh;
@@ -13,8 +16,7 @@ export class TaloObject extends EnvironmentObject {
 
   createPerustukset(): Mesh {
     
-    const boxMat = new StandardMaterial("boxMat");
-    boxMat.diffuseTexture = new Texture("https://assets.babylonjs.com/environments/cubehouse.png");
+    const boxMat = new TextureMaterial(this.scene,"https://assets.babylonjs.com/environments/cubehouse.png");
    
     const vectorForPaksuIkkuna = new Vector4(0.25,0,0.375,0.5)
     const tyhja = new Vector4(0.48,0,0.625,0.55)
@@ -32,12 +34,7 @@ export class TaloObject extends EnvironmentObject {
     box.position.y = 0.5;
     box.scaling.y = 0.75;
     box.material = boxMat;
-    box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, {
-      mass: 0,
-      restitution: 0,
-      friction: 10
-    });
-
+    createDefaultImpostor(box, true);
     return box;
   }
 

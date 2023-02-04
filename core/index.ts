@@ -18,6 +18,8 @@ export function createShadows(scene: Scene, objects: ObjectsModel): ShadowGenera
   light.intensity = 0.5;
   const shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
   objects.collectibles.forEach(collectible => shadowGenerator.getShadowMap().renderList.push(collectible.mesh));
+  objects.pickables.forEach(pickable => shadowGenerator.getShadowMap().renderList.push(pickable.mesh));
+
   shadowGenerator.getShadowMap().renderList.push(objects.player.vartaloMesh);
   return shadowGenerator;
 }

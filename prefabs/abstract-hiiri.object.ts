@@ -1,6 +1,7 @@
 import { AbstractMesh, Mesh, PhysicsImpostor, Scene, TransformNode, Vector3 } from "babylonjs";
 
 import * as BABYLON from 'babylonjs';
+import { DEFAULT_OBJECT_MASS } from "../core/config";
 export abstract class AbstractHiiriObject {
 
   public mesh: BABYLON.Mesh;
@@ -10,8 +11,6 @@ export abstract class AbstractHiiriObject {
 
   public leftSilmaMesh: Mesh;
   public rightSilmaMesh: Mesh;
-
-  private readonly mass = 10;
 
   constructor(scene: Scene, private name: string, usePhysics = true) {
     const { x, y, z } = this.createBoxVector();
@@ -27,7 +26,7 @@ export abstract class AbstractHiiriObject {
     this.createKorva("korva2", meshPaa, -1);
     if (usePhysics) {
       this.mesh.physicsImpostor = new PhysicsImpostor(this.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
-        mass: this.mass,
+        mass: DEFAULT_OBJECT_MASS,
         restitution: 0,
         friction: 0.5,
       });

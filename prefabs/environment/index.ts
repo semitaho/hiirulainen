@@ -11,9 +11,12 @@ import { RoadObject } from './road.object';
 import * as BABYLON from 'babylonjs';
 import { AutoObject } from './auto.object';
 import { MultaObject } from './multa.object';
+import { JuustoObject } from './juusto.object';
+
 import { calculateWidth } from '../../utils/geometry.util';
 import { ObsticleObject} from './obsticle.object';
 import { OmenaObject } from './omena.object';
+import { DEFAULT_PICKABLE_HEIGHT_POSITION } from '../../core/config';
 
 
 function createTaloWithImposter(talofn: () => TaloObject): void {
@@ -52,15 +55,20 @@ export function createEnvironment(scene: Scene): ObjectsModel {
 
     for (let positionX= 20; positionX <= 50; positionX = positionX + 3) {
         const newOmena = new OmenaObject(scene);
-        newOmena.setPosition(positionX, 1, 10);
+        newOmena.setPosition(positionX, DEFAULT_PICKABLE_HEIGHT_POSITION, 10);
         pickables.push(newOmena);
     }
 
     for (let positionz= -80; positionz <= 10; positionz = positionz + 5) {
         const newOmena = new OmenaObject(scene);
-        newOmena.setPosition(60, 1, positionz);
+        newOmena.setPosition(60, DEFAULT_PICKABLE_HEIGHT_POSITION, positionz);
         pickables.push(newOmena);
     }
+
+    /*
+    const juusto = new JuustoObject(scene);
+    juusto.setPosition(45, DEFAULT_PICKABLE_HEIGHT_POSITION, player.position.z);
+*/
 
     const taloCount = 10;
     const syvyysCount = 2;
@@ -146,8 +154,6 @@ function createGrass(scene: BABYLON.Scene) {
 
 function createCars(scene: Scene): void {
     const car = new AutoObject(scene);
-    car.setPosition(0, 2, 0);
-    car.setScale(12);
     const animCar = new BABYLON.Animation("carAnimation", "position.x", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
     const carKeys = [];
 
@@ -176,7 +182,7 @@ function createCars(scene: Scene): void {
 
 function createTrees(scene: BABYLON.Scene) {
     const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 20; i++) {
         const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
         const treePositionX = Math.random() * (-100);
         const randomHeight = HiirulainenTerrain.randomIntFromInterval(15, 20);
@@ -185,8 +191,7 @@ function createTrees(scene: BABYLON.Scene) {
         tree.width = 10;
         tree.height = randomHeight;
         tree.position.set(treePositionX, randomHeight - 10, Math.random() * 50 + 15);
-        const multaObject = new MultaObject();
-
+        const multaObject = new MultaObject(scene);
         multaObject.setPosition(-100 + (calculateWidth(multaObject) / 2) + (i * calculateWidth(multaObject)), 0.1, 26);
     }
 

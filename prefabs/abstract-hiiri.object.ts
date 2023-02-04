@@ -11,7 +11,7 @@ export abstract class AbstractHiiriObject {
   public leftSilmaMesh: Mesh;
   public rightSilmaMesh: Mesh;
 
-  private readonly mass = 20;
+  private readonly mass = 10;
 
   constructor(scene: Scene, private name: string, usePhysics = true) {
     const { x, y, z } = this.createBoxVector();

@@ -3,7 +3,7 @@ import * as BABYLON from 'babylonjs';
 import { UIModel } from "../models/ui.model";
 import * as GUI from 'babylonjs-gui';
 import { ObjectsModel } from "../models/objects.model";
-import { Scene, Vector3 } from "babylonjs";
+import { Scene, ShadowGenerator, Vector3 } from "babylonjs";
 
 export function createScene(engine: BABYLON.Engine): HiirulainenScene {
   let hiirulainenScene = new HiirulainenScene(engine);
@@ -12,13 +12,14 @@ export function createScene(engine: BABYLON.Engine): HiirulainenScene {
   return hiirulainenScene;
 }
 
-export function createShadows(scene: Scene, objects: ObjectsModel): void {
+export function createShadows(scene: Scene, objects: ObjectsModel): ShadowGenerator {
   const light = new BABYLON.DirectionalLight("dir01", new Vector3(0, -1, 0), scene);
   light.position = new BABYLON.Vector3(40, 10, 40);
-  light.intensity = 0.3;
+  light.intensity = 0.5;
   const shadowGenerator = new BABYLON.ShadowGenerator(1024, light);
   objects.collectibles.forEach(collectible => shadowGenerator.getShadowMap().renderList.push(collectible.mesh));
   shadowGenerator.getShadowMap().renderList.push(objects.player.vartaloMesh);
+  return shadowGenerator;
 }
 export async function registerServiceWorker(){
   if ("serviceWorker" in navigator) {
@@ -50,6 +51,16 @@ export function createUI(scene: HiirulainenScene): UIModel {
   textBlock.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
   textBlock.setPadding("30", "30", null, null);
   ui.addControl(textBlock);
+  const textBlock3 = new GUI.TextBlock("omenasaldo", "Omenasaldo: 0");
+  textBlock3.color = "black";
+  textBlock3.fontSize = "30";
+  textBlock3.fontWeight = "bold";
+  textBlock3.fontFamily = "Verdana";
+  textBlock3.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+  textBlock3.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+  textBlock3.setPadding("30", null, "30", "30");
+  ui.addControl(textBlock3);
+
   const textBlock2 = new GUI.TextBlock("hiirulainenPeli", "Hiirulaispeli");
   textBlock2.color = "red";
   textBlock2.fontSize = "50";
@@ -58,9 +69,10 @@ export function createUI(scene: HiirulainenScene): UIModel {
   textBlock2.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
   textBlock2.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
   textBlock2.setPadding("30", null, "30", "30");
-  ui.addControl(textBlock2);
   return {
     scores: textBlock,
+    pisteet: 0,
+    omenaTekstiBlock: textBlock3,
     ui
   };
 }

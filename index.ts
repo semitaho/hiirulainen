@@ -1,11 +1,11 @@
 import * as BABYLON from 'babylonjs';
-import { ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, Quaternion, Scene, Vector3 } from 'babylonjs';
+import { ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, PhysicsImpostor, Quaternion, Scene, Vector3 } from 'babylonjs';
 
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
 import { createScene, createShadows, createUI, registerServiceWorker } from './core';
-import { moveTowards, rotateTowards } from './utils/geometry.util';
-import { createEnvironment } from './prefabs';
+import { calculateWidth, moveTowards, rotateTowards } from './utils/geometry.util';
+import { createEnvironment } from './prefabs/environment';
 import { ObjectsModel } from './models/objects.model';
 import { createInputControls } from './core/player.input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
@@ -13,20 +13,47 @@ import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
 import * as GUI from 'babylonjs-gui';
-import { ampaiseVittuun } from './core/animations';
 
-function createColliderActions(scene: Scene, { player, piilotettavat, ground }: ObjectsModel): void {
+function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
     player.toggleJump(false);
   });
 
-  player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
-    player.toggleJump(false);
-  });
+  obsticles.forEach(obsticle => 
+    player.mesh.physicsImpostor.registerOnPhysicsCollide(obsticle.mesh.physicsImpostor, () => {
+      player.toggleJump(false);
+    }));
+
+
+
 }
 
-function createPickableActions(scene: Scene, { scores, ui }: UIModel, { piilotettavat, player }: ObjectsModel, { loytyi }: AudiosModel): void {
+function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UIModel, { piilotettavat, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
+  let pisteet = 0;
+  pickables.forEach(pickable => {
+    const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
+      trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
+      parameter: pickable.mesh
+    }, (event: ActionEvent) => {
+      pickable.mesh.dispose(true);
+      pisteet += pickable.points;
+      omenaTekstiBlock.text = "Pisteitä: "+pisteet;
+      player.mesh.actionManager.unregisterAction(iaction);
+      const currentScale = player.mesh.scaling;
+      player.mesh.scaling.scaleInPlace(1.05);
+      const bounding =  player.mesh.getBoundingInfo();
+    //  const positiony = (bounding.maximum.y - bounding.minimum.y) / 2;
+  //    player.mesh.position.y = positiony+0.5;
+      player.mesh.physicsImpostor.dispose();
+      player.mesh.physicsImpostor = new PhysicsImpostor(player.mesh, BABYLON.PhysicsImpostor.BoxImpostor, {
+        mass: 10,
+        restitution: 0,
+        friction: 0.5,
+      });
   
+
+    }));
+  });
   piilotettavat.forEach(piilotettava => {
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,

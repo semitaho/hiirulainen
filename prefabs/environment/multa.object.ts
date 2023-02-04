@@ -18,6 +18,7 @@ export class MultaObject extends EnvironmentObject {
     const material = new StandardMaterial("multaMaterial");
     mesh.material = material;
     material.diffuseTexture = new Texture("./textures/soilMud.jpeg");
+    mesh.receiveShadows = true;
     return mesh;
 
 

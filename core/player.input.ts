@@ -1,11 +1,14 @@
 import * as BABYLON from 'babylonjs';
-import { PointerEventTypes, Scalar, Vector3, PickingInfo, Scene } from "babylonjs";
+import { PointerEventTypes, Scalar, Vector3, PickingInfo, Scene, StickValues, Xbox360Dpad, Xbox360Button } from "babylonjs";
 import { HiirulainenCamera } from '../prefabs/hiirulainen.camera';
 import { Player } from '../prefabs/player';
+import { XBOX_STICKVALUE_EPSILON } from './config';
 
 import { inputControlsMap, moveVector } from './input.context';
 
-let xTarget = 0, zTarget = 0, horizontal = 0, vertical = 0,
+const gamepadManager = new BABYLON.GamepadManager();
+
+let xTarget = 0, zTarget = 0, horizontal = 0, vertical = 0, xboxEnable = false,
     verticalAxis = 0, horizontalAxis = 0, tryJump = false;
 export function createInputControls(scene: Scene, camera: HiirulainenCamera, player: Player): void {
     scene.preventDefaultOnPointerDown = true;
@@ -17,6 +20,34 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
         "ArrowLeft": "Left",
         " ": "Jump"
     };
+
+    gamepadManager.onGamepadConnectedObservable.add((gamepad, state) => {
+        xboxEnable = true;
+
+        const xbox360: BABYLON.Xbox360Pad = gamepad as BABYLON.Xbox360Pad;
+        xbox360.onButtonDownObservable.add((button: Xbox360Button) => {
+            if (button === Xbox360Button.A) {
+                inputControlsMap["Jump"] = true;
+            } else {
+                inputControlsMap["Jump"] = false;
+
+            }
+        });
+
+        xbox360.onButtonUpObservable.add(() => {
+            inputControlsMap["Jump"] = false;
+        });
+
+        xbox360.onleftstickchanged((stickValues: StickValues) => {
+            //Button has been pressed
+            horizontal = Math.abs(stickValues.x) < XBOX_STICKVALUE_EPSILON ? 0 : stickValues.x;
+            vertical = Math.abs(stickValues.y) < XBOX_STICKVALUE_EPSILON ? 0 : -stickValues.y;
+            xTarget = horizontal;
+            zTarget = vertical;
+
+        });
+    });
+
 
     scene.onPointerObservable.add((pointerInfo: BABYLON.PointerInfo) => {
         if (pointerInfo.type === PointerEventTypes.POINTERDOUBLETAP) {
@@ -73,7 +104,10 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
 
 
     scene.onBeforeRenderObservable.add(() => {
+
         updateControls();
+
+
         const scaleFactor = 0.2;
         let moveVector = new Vector3(horizontal, 0, vertical).normalize().scaleInPlace(scaleFactor);
         const pointerVector = new Vector3(xTarget, 0, zTarget).normalize();
@@ -94,6 +128,7 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
       */
     });
 }
+
 
 function updateControls() {
     const lerpAmount = 0.2;

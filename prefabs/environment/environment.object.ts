@@ -1,13 +1,13 @@
 import { Mesh, MeshBuilder, PhysicsImpostor, Scene } from "babylonjs";
 export abstract class EnvironmentObject {
 
-  public mesh: Mesh;
 
+  protected mainMesh: Mesh;
   constructor(name: string) {
-    this.mesh = MeshBuilder.CreateBox(name);
-    this.mesh.visibility = 0;
-    this.mesh.position.x = 0;
-    this.mesh.receiveShadows = true;
+    this.mainMesh= MeshBuilder.CreateBox(name);
+    this.mainMesh.visibility = 0;
+    this.mainMesh.position.x = 0;
+    this.mainMesh.receiveShadows = true;
 
   }
 
@@ -15,6 +15,10 @@ export abstract class EnvironmentObject {
     this.mesh.position.x = x;
     this.mesh.position.y = y;
     this.mesh.position.z = z;
+  }
+
+  public get mesh(): Mesh {
+    return this.mainMesh;
   }
 
   public setScale(scalingFactor:number): void {

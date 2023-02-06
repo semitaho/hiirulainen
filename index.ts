@@ -12,7 +12,8 @@ import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
 import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
-import { FALLING_POSITION_WHEN_RESTART } from "./core/config"; 
+import { vilkkuminen } from './core/animations';
+import { DEFAULT_ENDING_SCORES, FALLING_POSITION_WHEN_RESTART } from "./core/config";
 import * as GUI from 'babylonjs-gui';
 
 function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
@@ -20,7 +21,7 @@ function createColliderActions(scene: Scene, { player, obsticles, ground }: Obje
     player.toggleJump(false);
   });
 
-  obsticles.forEach(obsticle => 
+  obsticles.forEach(obsticle =>
     player.mesh.physicsImpostor.registerOnPhysicsCollide(obsticle.mesh.physicsImpostor, () => {
       player.toggleJump(false);
     }));
@@ -29,8 +30,25 @@ function createColliderActions(scene: Scene, { player, obsticles, ground }: Obje
 
 }
 
-function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UIModel, { piilotettavat, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
+function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: UIModel, { piilotettavat, enemies, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
   let pisteet = 0;
+  enemies.forEach(enemy => {
+    console.log('enemy', enemy);
+    const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
+      trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
+      parameter: enemy.mesh
+    }, (event: ActionEvent) => {
+      console.log('enemy hit', enemy);
+      player.mesh.getChildren().forEach(childMesh => {
+        scene.beginDirectHierarchyAnimation(childMesh, false, [vilkkuminen()], 0, 30, true);
+
+      });
+
+  
+
+    }));
+
+  });
   pickables.forEach(pickable => {
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
@@ -38,11 +56,11 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
     }, (event: ActionEvent) => {
       pickable.mesh.dispose(true);
       pisteet += pickable.points;
-      omenaTekstiBlock.text = "Pisteitä: "+pisteet;
+      omenaTekstiBlock.text = "Pisteitä: " + pisteet;
       player.mesh.actionManager.unregisterAction(iaction);
       player.mesh.scaling.scaleInPlace(1.05);
       player.mesh.physicsImpostor.forceUpdate();
-  
+
     }));
   });
   piilotettavat.forEach(piilotettava => {
@@ -54,7 +72,7 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
 
         piilotettava.setLoydetty();
         loytyi.then((audio: HiirulainenAudio) => {
-          const playbackRate =HiirulainenTerrain.randomIntFromInterval(50, 150) / 100;
+          const playbackRate = HiirulainenTerrain.randomIntFromInterval(50, 150) / 100;
           audio.setPlaybackRate(playbackRate);
           audio.play();
         });
@@ -62,19 +80,19 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock}: UI
         //piilotettava.getMesh().dispose(false, true);
         scores.text = (parseInt(scores.text, 20) + 1).toString();
         player.mesh.actionManager.unregisterAction(iaction);
-        if (scores.text === "2") {
+        if (scores.text === DEFAULT_ENDING_SCORES) {
           player.gameOver();
           const textBlock = new GUI.TextBlock("score", "Peli päättyi!");
-          textBlock.textVerticalAlignment  = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+          textBlock.textVerticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
           textBlock.paddingBottom = 10;
           textBlock.textHorizontalAlignment = GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
           textBlock.color = "yellow";
           textBlock.fontSize = 60;
           ui.addControl(textBlock);
           restartGame(scene);
-         
+
           //BABYLON.Animation.CreateAndStartAnimation("fadeout", textBlock, "alpha", 1, 30, 0, 30);
-         // setTimeout(() => ui.removeControl(textBlock), 6000);
+          // setTimeout(() => ui.removeControl(textBlock), 6000);
         }
 
         // Create a particle system
@@ -106,11 +124,11 @@ function restartGame(scene: Scene, timeoutInMillis: number = 3000): void {
   setTimeout(() => {
     scene.dispose();
     loadGame(scene.getEngine())
-    .then(_ => {
-      console.log('game loaded!');
-      engine.hideLoadingUI();
-    });
-    
+      .then(_ => {
+        console.log('game loaded!');
+        engine.hideLoadingUI();
+      });
+
 
   }, timeoutInMillis);
 }

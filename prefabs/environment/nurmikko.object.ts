@@ -8,9 +8,9 @@ export class NurmikkoObject extends EnvironmentObject {
 
   constructor(scene: Scene) {
     super("nurmikko"+ Math.random());
-    this.mesh = MeshBuilder.CreateGround("nurmikko"+ Math.random, { width: NurmikkoObject.WIDTH, height: NurmikkoObject.DEPTH});
+    this.mainMesh= MeshBuilder.CreateGround("nurmikko"+ Math.random, { width: NurmikkoObject.WIDTH, height: NurmikkoObject.DEPTH});
     const material  = new StandardMaterial("nurmikkoMat", scene);
     material.ambientTexture = new GrassProceduralTexture("nurmikko", 128, scene);
-    this.mesh.material = material;
+    this.mainMesh.material = material;
   }
 }

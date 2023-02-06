@@ -4,8 +4,12 @@ import { EnvironmentObject } from "./environment.object";
 import { createRenkaanPyoriminen } from "../../core/animations";
 import { createDefaultImpostor } from "../../core/physics.core";
 import { TextureMaterial } from "../../textures/texture.material";
+import { Enemy } from './../../models';
 
-export class AutoObject extends EnvironmentObject {
+export class AutoObject extends EnvironmentObject implements Enemy {
+
+
+  private _mesh: Mesh;
 
   constructor(private scene: Scene) {
     super("auto");
@@ -32,15 +36,19 @@ export class AutoObject extends EnvironmentObject {
     faceUV[2] = new Vector4(0.38, 1, 0, 0.5);
 
 
-    this.mesh = MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2, faceUV, wrap: true }, null, earcut);
-    this.mesh.material = new TextureMaterial(scene, "https://assets.babylonjs.com/environments/car.png");
-    this.mesh.rotation.x = -Math.PI / 2;
+    this._mesh = MeshBuilder.ExtrudePolygon("car", { shape: outline, depth: 0.2, faceUV, wrap: true }, null, earcut);
+    this._mesh.material = new TextureMaterial(scene, "https://assets.babylonjs.com/environments/car.png");
+    this._mesh.rotation.x = -Math.PI / 2;
 
     this.createWheels();
     this.setScale(12);
-    this.mesh.visibility = 1;
-    this.mesh.position.y = 1.5;
+    this._mesh.visibility = 1;
+    this._mesh.position.y = 1.5;
 
+  }
+
+  get mesh(): Mesh {
+    return this._mesh;
   }
 
   private createWheels(): void {

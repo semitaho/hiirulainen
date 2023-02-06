@@ -130,13 +130,14 @@ export function createEnvironment(scene: Scene): ObjectsModel {
     }
     createTrees(scene);
     createGrass(scene);
-    createCars(scene);
+    const enemies = createCars(scene);
     return {
         player,
         ground,
         aiti,
         orvokit,
         pickables,
+        enemies,
         collectibles,
         obsticles: [obsticle],
         piilotettavat: maikit
@@ -152,7 +153,7 @@ function createGrass(scene: BABYLON.Scene) {
     }
 }
 
-function createCars(scene: Scene): void {
+function createCars(scene: Scene): AutoObject[] {
     const car = new AutoObject(scene);
     const animCar = new BABYLON.Animation("carAnimation", "position.x", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
     const carKeys = [];
@@ -178,6 +179,7 @@ function createCars(scene: Scene): void {
     car.mesh.animations.push(animCar);
 
     scene.beginAnimation(car.mesh, 0, 300, true);
+    return [car];
 }
 
 function createTrees(scene: BABYLON.Scene) {

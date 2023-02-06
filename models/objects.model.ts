@@ -6,6 +6,7 @@ import { Piilotettava } from './piilotettava.interface';
 import { OrvokkiObject } from '../prefabs/kaverit';
 import { ObsticleObject } from '../prefabs/environment/obsticle.object';
 import { PickableObject } from '../prefabs/environment/pickable.object';
+import { Enemy } from '../models';
 
 export interface ObjectsModel {
   player: Player,
@@ -15,5 +16,6 @@ export interface ObjectsModel {
   pickables: PickableObject[],
   collectibles: CollectibleModel[],
   obsticles: ObsticleObject[],
+  enemies: Enemy[],
   piilotettavat: Piilotettava[]
 };

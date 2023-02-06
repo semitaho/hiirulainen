@@ -3,9 +3,15 @@ import { EnvironmentObject } from "./environment.object";
 import { TextureMaterial } from './../../textures/texture.material';
 export class MultaObject extends EnvironmentObject {
   private readonly MULTA_DEPTH = 30;
+
+  private _mesh: Mesh;
   constructor(private scene: Scene) {
     super("multa");
-    this.mesh = this.createMesh();
+    this._mesh = this.createMesh();
+  }
+
+  public get mesh(): Mesh {
+    return this._mesh;
   }
 
   private createMesh(): Mesh {

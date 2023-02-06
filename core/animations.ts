@@ -87,9 +87,45 @@ export function createHulahula(): BABYLON.Animation {
 
   animHulahula.setKeys(allKeys);
   return animHulahula;
-
 }
 
+export function vilkkuminen(): BABYLON.Animation {
+  const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const arr = [];
+  arr.push({
+    frame: 0,
+    value: 1
+  });
+
+  //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
+  arr.push({
+    frame: 5,
+    value: 0
+  });
+  arr.push({
+    frame: 10,
+    value: 1
+  });
+  arr.push({
+    frame: 15,
+    value: 0
+  });
+  arr.push({
+    frame: 20,
+    value: 1
+  });
+  arr.push({
+    frame: 25,
+    value: 0
+  });
+  arr.push({
+    frame: 30,
+    value: 1
+  });
+  blinkingAnimation.setKeys(arr);
+  return blinkingAnimation;
+
+}
 export function ampaiseVittuun(startY: number): BABYLON.Animation {
   const animWheel = new BABYLON.Animation("ampaise", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_RELATIVE);
   const wheelKeys = [];

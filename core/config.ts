@@ -5,3 +5,7 @@ export const FALLING_POSITION_WHEN_RESTART = -10;
 export const DEFAULT_PICKABLE_HEIGHT_POSITION = 2;
 
 export const DEFAULT_OBJECT_MASS = 0.01;
+
+export const DEFAULT_ENDING_SCORES = "10";
+
+export const XBOX_STICKVALUE_EPSILON = 0.2;

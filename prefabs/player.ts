@@ -1,6 +1,8 @@
 import { Mesh, PhysicsImpostor, Quaternion, Scene, TransformNode, Vector3, IPhysicsEnabledObject, StandardMaterial, Color3, ActionManager, Animation, IAnimationKey } from "babylonjs";
 import * as BABYLON from 'babylonjs';
 import { AbstractHiiriObject } from './abstract-hiiri.object';
+import { DEFAULT_JUMP_IMPULSE } from "../core/config";
+import { convertColor } from "../utils/geometry.util";
 
 export class Player extends AbstractHiiriObject {
 
@@ -115,7 +117,7 @@ export class Player extends AbstractHiiriObject {
   protected createVartalo(): Mesh {
     this.vartaloMesh = super.createVartalo();
     const hiirulaisvartalo = this.vartaloMesh.material as StandardMaterial;
-    hiirulaisvartalo.diffuseColor = Color3.Blue();
+    hiirulaisvartalo.diffuseColor = convertColor(231, 243, 244);
     return this.vartaloMesh;
   }
 
@@ -136,7 +138,7 @@ export class Player extends AbstractHiiriObject {
     if (this.jumping || !tryJump) {
       return;
     }
-    this.mesh.physicsImpostor.applyImpulse(Vector3.Up().scaleInPlace(this.impulse), this.mesh.position);
+    this.mesh.physicsImpostor.applyImpulse(Vector3.Up().scaleInPlace(DEFAULT_JUMP_IMPULSE), this.mesh.position);
     this.jumping = true;
 
   }

@@ -6,6 +6,10 @@ export function calculateWidth(object: EnvironmentObject): number {
    return boundingBox.maximum.x - boundingBox.minimum.x;
 }
 
+export function convertColor(r: number, g: number, b:number): BABYLON.Color3 {
+   return new BABYLON.Color3(r / 255, g / 255, b / 255);
+}
+
 export function moveTowards(mesh: Mesh, location: Vector2, camera: ArcFollowCamera): void {
 
    if (Vector3.Distance(mesh.position, new Vector3(location.x, mesh.position.y, location.y)) < 0.5) {

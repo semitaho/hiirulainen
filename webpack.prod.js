@@ -28,6 +28,7 @@ module.exports = merge(common, {
                 { from: "audio", to: "audio" },
                 { from: "textures", to: "textures" },
                 { from: "icons", to: "icons" },
+                { from: "assets", to: "assets" }
 
             ],
         }),

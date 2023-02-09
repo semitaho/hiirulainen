@@ -69,7 +69,7 @@ export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
     return null;
   }
 
-  protected createPaa(hiirulainen: TransformNode): Mesh {
+  protected createPaa(hiirulainen: Mesh): Mesh {
     const paa = super.createPaa(hiirulainen);
     const standardMaterial = new StandardMaterial("maikkiPaaMaterial");
     standardMaterial.diffuseColor = Color3.Black();

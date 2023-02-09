@@ -11,7 +11,8 @@ const inputControlsMap = {
     "Up": false,
     "Left": false,
     "Right": false,
-    "Jump": false
+    "Jump": false,
+    "Hit": false
 };
 
 export {

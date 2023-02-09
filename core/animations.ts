@@ -89,6 +89,63 @@ export function createHulahula(): BABYLON.Animation {
   return animHulahula;
 }
 
+export function createJumpHitAnimation(): BABYLON.Animation {
+  const hitAnimation = new BABYLON.Animation("jumHitAnimation", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const arr = [{
+    frame: 0,
+    value:  0
+  }, 
+  
+  {
+    frame: 13,
+    value: 0.5
+  },
+
+  {
+    frame: 15,
+    value: 0.6
+  },
+  {
+    frame: 30,
+    value: 0
+  }
+];
+
+  hitAnimation.setKeys(arr);
+  return hitAnimation;
+}
+
+export function createHitAnimation(): BABYLON.Animation {
+  const hitAnimation = new BABYLON.Animation("hitAnimation", "rotation.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const arr = [{
+    frame: 0,
+    value:  0
+  }, 
+  
+  {
+    frame: 10,
+    value: Math.PI * 2
+  },
+
+  {
+    frame: 15,
+    value: 2*  Math.PI * 2
+  },
+
+  {
+    frame: 20,
+    value: 3 *  Math.PI * 2
+  },
+  
+  {
+    frame: 30,
+    value: 4 * Math.PI * 2
+  }];
+
+  hitAnimation.setKeys(arr);
+  return hitAnimation;
+}
+
 export function suljeAvaaSilmat(): BABYLON.Animation {
   const suljeAvaaAnimation = new BABYLON.Animation("suljeAvaa", "scaling", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const arr = [{

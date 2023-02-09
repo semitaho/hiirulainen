@@ -10,15 +10,25 @@ export class HiirulainenTerrain {
 
     this.mesh = MeshBuilder.CreateGround("hiirulainenGround", {
       width: 200,
-      height: 200,   
+      height: 200,
     });
-   
+
+
     const terrainMaterial = new BABYLON.StandardMaterial("materialGround");
     terrainMaterial.diffuseTexture = new BABYLON.Texture("./textures/snow/snow_02_diff_4k.jpg");
     this.mesh.material = terrainMaterial;
-    this.mesh.alphaIndex =2;
+    this.mesh.alphaIndex = 2;
     this.createTerrainCollider();
     this.mesh.receiveShadows = true;
+    const arr = this.mesh.getVerticesData(BABYLON.VertexBuffer.PositionKind);
+    console.log("arr", arr);
+
+    for (var i = 0; i < arr.length; i += 3) {
+      arr[i + 2] = arr[i] / 10;
+    }
+    this.mesh.updateVerticesData(BABYLON.VertexBuffer.PositionKind, arr);
+
+
   }
 
   private createTerrainCollider(): void {
@@ -37,8 +47,8 @@ export class HiirulainenTerrain {
 
   public getBounds(): Vector3[] {
     return [
-       this.mesh.getBoundingInfo().boundingBox.minimum,
-       this.mesh.getBoundingInfo().boundingBox.maximum,
+      this.mesh.getBoundingInfo().boundingBox.minimum,
+      this.mesh.getBoundingInfo().boundingBox.maximum,
 
     ];
   }

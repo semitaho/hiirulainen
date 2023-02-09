@@ -52,9 +52,8 @@ export abstract class AbstractHiiriObject {
 
     const pathHelix = [];
     for (let i = 0; i <= 50; i++) {
-      console.log('jee', Math.cos(i));
-      let v = Math.PI * i / 25;
-      pathHelix.push(new BABYLON.Vector3(Math.cos(Math.PI * i / 10), 1 - (i / 10), -1 +   Math.cos(v)));
+      const z = -i / 10;
+      pathHelix.push(new BABYLON.Vector3( 2*  (Math.cos(i / 3) / 10), 0.5 - (i / 100), -0.5 + (z / 3)));
     }
 
     //show pathHelix
@@ -161,7 +160,7 @@ export abstract class AbstractHiiriObject {
     return capsule;
   }
 
-  protected createPaa(hiirulainen: TransformNode): Mesh {
+  protected createPaa(vartaloMesh: Mesh): Mesh {
     const capsule = BABYLON.MeshBuilder.CreateCapsule("paa", {
       radius: 0.2,
       height: 1.4,
@@ -173,7 +172,7 @@ export abstract class AbstractHiiriObject {
     const material = new StandardMaterial("paaMaterial");
     material.diffuseColor = convertColor(114, 86, 56);
     capsule.material = material;
-    capsule.parent = hiirulainen;
+    vartaloMesh.addChild(capsule)
 
     const arcLine = BABYLON.MeshBuilder.CreateSphere("arc", { diameterZ: .7, slice: 0.4 });
     const suumaterial = new StandardMaterial("suu");

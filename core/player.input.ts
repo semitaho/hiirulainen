@@ -9,7 +9,7 @@ import { inputControlsMap, moveVector } from './input.context';
 const gamepadManager = new BABYLON.GamepadManager();
 
 let xTarget = 0, zTarget = 0, horizontal = 0, vertical = 0, xboxEnable = false,
-    verticalAxis = 0, horizontalAxis = 0, tryJump = false;
+    verticalAxis = 0, horizontalAxis = 0, tryJump = false, tryHit = false;
 export function createInputControls(scene: Scene, camera: HiirulainenCamera, player: Player): void {
     scene.preventDefaultOnPointerDown = true;
     scene.preventDefaultOnPointerUp = true;
@@ -18,7 +18,8 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
         "ArrowUp": "Up",
         "ArrowRight": "Right",
         "ArrowLeft": "Left",
-        " ": "Jump"
+        " ": "Jump",
+        "v": "Hit"
     };
 
     gamepadManager.onGamepadConnectedObservable.add((gamepad, state) => {
@@ -33,6 +34,7 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
 
             }
         });
+
 
         xbox360.onButtonUpObservable.add(() => {
             inputControlsMap["Jump"] = false;
@@ -93,6 +95,7 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
         }));
 
 
+
     scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger,
         (event: BABYLON.ActionEvent) => {
             if (!keyboardControlsToActionsMap[event.sourceEvent?.key]) {
@@ -118,6 +121,7 @@ export function createInputControls(scene: Scene, camera: HiirulainenCamera, pla
         }
         player.mesh.moveWithCollisions(moveVector);
         player.checkJump(tryJump);
+        player.checkHit(tryHit);
         player.checkRotation(horizontalAxis, verticalAxis, camera);
         /*
         if (xTarget > 0 || zTarget > 0) {
@@ -157,6 +161,13 @@ function updateControls() {
     else {
         horizontal = 0;
         horizontalAxis = 0;
+    }
+
+    if (inputControlsMap["Hit"]) {
+        console.log('ill hit...');
+        tryHit = true;
+    } else {
+        tryHit = false;
     }
 
     if (inputControlsMap["Jump"]) {

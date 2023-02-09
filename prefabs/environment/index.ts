@@ -3,7 +3,7 @@ import { AitiObject, MaikkiObject, OrvokkiObject } from '../kaverit';
 import { TimanttiObject } from './timantti.object';
 import { createRenkaanPyoriminen } from "./../../core/animations";
 import { NurmikkoObject } from './nurmikko.object';
-import { PhysicsImpostor, Scene, Vector2 } from 'babylonjs';
+import { ISceneLoaderAsyncResult, PhysicsImpostor, Scene, SceneLoader, Vector2, Vector3 } from 'babylonjs';
 import { ObjectsModel } from '../../models/objects.model';
 import { Player } from '../player';
 import { TaloObject } from './talo.object';
@@ -65,11 +65,6 @@ export function createEnvironment(scene: Scene): ObjectsModel {
         pickables.push(newOmena);
     }
 
-    /*
-    const juusto = new JuustoObject(scene);
-    juusto.setPosition(45, DEFAULT_PICKABLE_HEIGHT_POSITION, player.position.z);
-*/
-
     const taloCount = 10;
     const syvyysCount = 2;
     for (let j = 1; j <= syvyysCount; j++) {
@@ -97,6 +92,20 @@ export function createEnvironment(scene: Scene): ObjectsModel {
 
 
     }
+
+    BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/", "rabbit.babylon")
+        .then((jee: ISceneLoaderAsyncResult) => {
+            console.log('joo skeletons', jee.skeletons);
+           // jee.meshes[1].position = new Vector3(3, 2, 3);
+            jee.meshes[0].scaling.scaleInPlace(0.1);
+            jee.meshes[0].position = new Vector3(6, 0, 3);
+            jee.meshes[0].setDirection(Vector3.Right());
+            
+
+            scene.beginAnimation(jee.skeletons[0], 0,200, true);
+        });
+
+    
 
 
     const aiti = new AitiObject(scene);

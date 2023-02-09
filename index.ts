@@ -23,6 +23,7 @@ function createColliderActions(scene: Scene, { player, obsticles, ground }: Obje
 
   obsticles.forEach(obsticle =>
     player.mesh.physicsImpostor.registerOnPhysicsCollide(obsticle.mesh.physicsImpostor, () => {
+      console.log('kjoo');
       player.toggleJump(false);
     }));
 

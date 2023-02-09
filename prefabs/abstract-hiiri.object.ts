@@ -3,6 +3,8 @@ import { AbstractMesh, Color3, Mesh, PhysicsImpostor, Scene, StandardMaterial, T
 import * as BABYLON from 'babylonjs';
 import { DEFAULT_OBJECT_MASS } from "../core/config";
 import { convertColor } from "../utils/geometry.util";
+import { suljeAvaaSilmat } from "../core/animations";
+import { HiirulainenTerrain } from "./hiirulainen.terrain";
 export abstract class AbstractHiiriObject {
 
   public mesh: BABYLON.Mesh;
@@ -13,17 +15,18 @@ export abstract class AbstractHiiriObject {
   public leftSilmaMesh: Mesh;
   public rightSilmaMesh: Mesh;
 
-  constructor(scene: Scene, private name: string, usePhysics = true) {
+  constructor(protected scene: Scene, private name: string, usePhysics = true) {
     const { x, y, z } = this.createBoxVector();
     this.mesh = BABYLON.MeshBuilder.CreateBox(this.name, { width: x, height: y, depth: z });
     this.mesh.visibility = 0;
     this.vartaloMesh = this.createVartalo();
     const meshPaa = this.createPaa(this.vartaloMesh);
     this.leftKasiMesh = this.createKasi("kasi1", this.createKasiMaterial(), this.vartaloMesh, -1, scene);
-    this.rightKasiMesh = this.createKasi("kasi2", this.createKasiMaterial(),this.vartaloMesh, 1, scene);
+    this.rightKasiMesh = this.createKasi("kasi2", this.createKasiMaterial(), this.vartaloMesh, 1, scene);
     this.createHanta(this.vartaloMesh, scene);
-    this.leftSilmaMesh = this.createSilma("silma1", meshPaa, -1);
-    this.rightSilmaMesh = this.createSilma("silma2", meshPaa, 1);
+    const silmatStartTime = HiirulainenTerrain.randomIntFromInterval(2, 10);
+    this.leftSilmaMesh = this.createSilma("silma1", meshPaa, -1, silmatStartTime);
+    this.rightSilmaMesh = this.createSilma("silma2", meshPaa, 1, silmatStartTime);
     this.createKorva("korva1", meshPaa, 1);
     this.createKorva("korva2", meshPaa, -1);
     if (usePhysics) {
@@ -45,8 +48,22 @@ export abstract class AbstractHiiriObject {
     return this.mesh.position;
   }
 
-  private createHanta(mesh: Mesh, scene: Scene): void {
+  private createHanta(vartaloMesh: Mesh, scene: Scene): void {
 
+    const pathHelix = [];
+    for (let i = 0; i <= 50; i++) {
+      console.log('jee', Math.cos(i));
+      let v = Math.PI * i / 25;
+      pathHelix.push(new BABYLON.Vector3(Math.cos(Math.PI * i / 10), 1 - (i / 10), -1 +   Math.cos(v)));
+    }
+
+    //show pathHelix
+    const hantaMesh = BABYLON.MeshBuilder.CreateLines("helixLines", { points: pathHelix });
+    vartaloMesh.addChild(hantaMesh);
+    hantaMesh.setPositionWithLocalVector(new Vector3(0, -1, 0));
+    const material = new StandardMaterial("hantaMaterial");
+    material.diffuseColor = convertColor(81, 66, 54);
+    hantaMesh.material = material;
 
   }
 
@@ -67,7 +84,6 @@ export abstract class AbstractHiiriObject {
     newMesh.rotation.x = BABYLON.Tools.ToRadians(-20);
     newMesh.material = kasiMaterial;
     newMesh.setPositionWithLocalVector(new Vector3((newMesh.getBoundingInfo().boundingSphere.radius + 0.2) * direction, 0, 0.2));
-    const frameRate = 50;
     /*
     const kasienheiluttelu = createKasienheiluttelu(direction);
     newMesh.animations.push(kasienheiluttelu);
@@ -83,7 +99,7 @@ export abstract class AbstractHiiriObject {
   }
 
 
-  private createSilma(name: string, paa: Mesh, direction: number): Mesh {
+  private createSilma(name: string, paa: Mesh, direction: number, timeoutInSeconds: number): Mesh {
     const capsule = BABYLON.MeshBuilder.CreateSphere(this.name + name, {
       diameterZ: 0.18,
       diameterY: 0.3,
@@ -95,16 +111,20 @@ export abstract class AbstractHiiriObject {
     material.diffuseColor = Color3.White();
     capsule.material = material;
 
-    const sphere = BABYLON.MeshBuilder.CreateSphere("silmakuoppa", {   
+    const sphere = BABYLON.MeshBuilder.CreateSphere("silmakuoppa", {
       diameterZ: 0.15,
       diameterY: 0.16,
-      diameterX: 0.16} );
+      diameterX: 0.16
+    });
     const silmakuoppamaterial = new StandardMaterial("silmakuoppaMaterial");
     silmakuoppamaterial.diffuseColor = Color3.Black();
     sphere.material = silmakuoppamaterial;
 
     capsule.addChild(sphere);
-    sphere.setPositionWithLocalVector(new Vector3(0,0.05,0.05));
+    sphere.setPositionWithLocalVector(new Vector3(0, 0.05, 0.05));
+
+    capsule.animations.push(suljeAvaaSilmat());
+    setTimeout(() => this.scene.beginAnimation(capsule, 0, 30, true, 0.2), timeoutInSeconds * 1000);
 
     return capsule;
   }
@@ -134,7 +154,7 @@ export abstract class AbstractHiiriObject {
       diameterZ: 0.4
     });
     capsule.setPositionWithLocalVector(new Vector3(0.3 * direction, 0.4, -0.7));
-    const material = new StandardMaterial("korva"+direction);
+    const material = new StandardMaterial("korva" + direction);
     material.diffuseColor = convertColor(227, 177, 150);
     capsule.material = material;
     capsule.parent = parentMesh;
@@ -154,15 +174,15 @@ export abstract class AbstractHiiriObject {
     material.diffuseColor = convertColor(114, 86, 56);
     capsule.material = material;
     capsule.parent = hiirulainen;
-   
-    const arcLine = BABYLON.MeshBuilder.CreateSphere("arc", { diameterZ: .7, slice: 0.4  });
+
+    const arcLine = BABYLON.MeshBuilder.CreateSphere("arc", { diameterZ: .7, slice: 0.4 });
     const suumaterial = new StandardMaterial("suu");
-    suumaterial.diffuseColor =Color3.Black();
+    suumaterial.diffuseColor = Color3.Black();
     arcLine.material = suumaterial;
     capsule.addChild(arcLine);
-    arcLine.setPositionWithLocalVector(new Vector3(0,0.05,-0.1));
+    arcLine.setPositionWithLocalVector(new Vector3(0, 0.05, -0.1));
 
-   
+
     //arcLine.rotation.x = Math.PI / 4;
     //arcLine.rotation.y = Math.PI / 4;
     arcLine.rotation.z = Math.PI;

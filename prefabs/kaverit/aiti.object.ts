@@ -6,7 +6,7 @@ import { moveTowards } from "../../utils/geometry.util";
 
  export class AitiObject extends AbstractHiiriObject {
 
-   constructor(private scene: Scene) {
+   constructor(protected scene: Scene) {
     super(scene, "aiti");
     this.mesh.setAbsolutePosition(new Vector3(-5, 8, -3));
     this.mesh.scaling = new Vector3(2,2,2);

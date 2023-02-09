@@ -13,7 +13,7 @@ export class Player extends AbstractHiiriObject {
   private jumping = false;
   private readonly impulse = 0.1;
  
-  constructor(private scene: Scene) {
+  constructor(protected scene: Scene) {
     super(scene, "hiirulainen");
     this.mesh.actionManager = new ActionManager(scene);
     this.mesh.setDirection(Vector3.Forward());

@@ -4,7 +4,7 @@ import { createHulahula, moveKasi } from "../../core/animations";
 import { HiirulainenTerrain } from "../hiirulainen.terrain";
 
 export class OrvokkiObject extends AbstractHiiriObject {
-  constructor(private scene: Scene) {
+  constructor(protected scene: Scene) {
     super(scene, "orvokki", false);
     this.mesh.setDirection(new Vector3(0, 0, -1));
     this.mesh.physicsImpostor = null;

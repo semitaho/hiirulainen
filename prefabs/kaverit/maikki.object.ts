@@ -8,7 +8,7 @@ export class MaikkiObject extends AbstractHiiriObject implements Piilotettava {
 
   private piilopaikka: Vector2;
   private _missing = true;
-  constructor(private scene: Scene, direction: number) {
+  constructor(protected scene: Scene, direction: number) {
     super(scene, "maikki", false);
 
     this.setPosition(10, 4, 4);

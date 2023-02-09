@@ -89,6 +89,34 @@ export function createHulahula(): BABYLON.Animation {
   return animHulahula;
 }
 
+export function suljeAvaaSilmat(): BABYLON.Animation {
+  const suljeAvaaAnimation = new BABYLON.Animation("suljeAvaa", "scaling", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+  const arr = [{
+    frame: 0,
+    value:  Vector3.One()
+  }, 
+  {
+    frame: 14,
+    value: Vector3.One()
+  },
+  {
+    frame: 15,
+    value: new Vector3 (1,0,0)
+  },
+
+  {
+    frame: 16,
+    value: Vector3.One()
+  },
+
+  {
+    frame: 30,
+    value:  Vector3.One()
+  }];
+  suljeAvaaAnimation.setKeys(arr);
+  return suljeAvaaAnimation;
+}
+
 export function vilkkuminen(): BABYLON.Animation {
   const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [];

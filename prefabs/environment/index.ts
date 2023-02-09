@@ -139,7 +139,7 @@ export function createEnvironment(scene: Scene): ObjectsModel {
         pickables,
         enemies,
         collectibles,
-        obsticles: [obsticle],
+        obsticles: [obsticle, obsticle2],
         piilotettavat: maikit
     };
 

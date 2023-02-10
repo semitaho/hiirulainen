@@ -3,7 +3,7 @@ import { AitiObject, MaikkiObject, OrvokkiObject } from '../kaverit';
 import { TimanttiObject } from './timantti.object';
 import { createRenkaanPyoriminen } from "./../../core/animations";
 import { NurmikkoObject } from './nurmikko.object';
-import { ISceneLoaderAsyncResult, PhysicsImpostor, Scene, SceneLoader, Vector2, Vector3 } from 'babylonjs';
+import { ISceneLoaderAsyncResult, PhysicsImpostor, Quaternion, Scene, SceneLoader, Vector2, Vector3 } from 'babylonjs';
 import { ObjectsModel } from '../../models/objects.model';
 import { Player } from '../player';
 import { TaloObject } from './talo.object';
@@ -14,9 +14,10 @@ import { MultaObject } from './multa.object';
 import { JuustoObject } from './juusto.object';
 
 import { calculateWidth } from '../../utils/geometry.util';
-import { ObsticleObject} from './obsticle.object';
+import { ObsticleObject } from './obsticle.object';
 import { OmenaObject } from './omena.object';
-import { DEFAULT_PICKABLE_HEIGHT_POSITION } from '../../core/config';
+import { DEFAULT_OBJECT_MASS, DEFAULT_PICKABLE_HEIGHT_POSITION } from '../../core/config';
+import { TextureMaterial } from '../../textures/texture.material';
 
 
 function createTaloWithImposter(talofn: () => TaloObject): void {
@@ -37,31 +38,42 @@ export function createEnvironment(scene: Scene): ObjectsModel {
 
     const collectibles = [];
     const bounds = ground.getBounds();
+    const kaverit = new BABYLON.TransformNode("kaverit");
+    const ymparisto = new BABYLON.TransformNode("ymparisto");
+
     const orvokit = [];
     for (let i = 0; i < 10; i++) {
         const orvokkiObject = new OrvokkiObject(scene);
         orvokkiObject.setPosition(40 + (i * 3), 2, 50);
         orvokit.push(orvokkiObject);
+        orvokkiObject.mesh.parent = kaverit;
     }
-
+    const omenaMaterial = new TextureMaterial(scene, "./textures/apple.jpeg")
     const obsticle = new ObsticleObject(scene, "trampoline.jpeg")
     obsticle.setPosition(30, 2, 20);
+    obsticle.mesh.parent = ymparisto;
 
-    const obsticle2 = new ObsticleObject(scene,  "trampoline2.jpeg")
+    const obsticle2 = new ObsticleObject(scene, "trampoline2.jpeg")
     obsticle2.setPosition(45, 5, 20);
-    const omena = new OmenaObject(scene);
+    obsticle2.mesh.parent = ymparisto;
+
+    const omena = new OmenaObject(scene, omenaMaterial);
     omena.setPosition(45, 7, 20);
+    omena.mesh.parent = ymparisto;
     const pickables = [omena];
 
-    for (let positionX= 20; positionX <= 50; positionX = positionX + 3) {
-        const newOmena = new OmenaObject(scene);
+    for (let positionX = 20; positionX <= 50; positionX = positionX + 3) {
+        const newOmena = new OmenaObject(scene, omenaMaterial);
         newOmena.setPosition(positionX, DEFAULT_PICKABLE_HEIGHT_POSITION, 10);
         pickables.push(newOmena);
+        newOmena.mesh.parent = ymparisto;
+
     }
 
-    for (let positionz= -80; positionz <= 10; positionz = positionz + 5) {
-        const newOmena = new OmenaObject(scene);
+    for (let positionz = -80; positionz <= 10; positionz = positionz + 5) {
+        const newOmena = new OmenaObject(scene, omenaMaterial);
         newOmena.setPosition(60, DEFAULT_PICKABLE_HEIGHT_POSITION, positionz);
+        newOmena.mesh.parent = ymparisto;
         pickables.push(newOmena);
     }
 
@@ -74,6 +86,7 @@ export function createEnvironment(scene: Scene): ObjectsModel {
                 talo.setPosition(bounds[0].x + (10 * i), 0, -100 + (20 * j));
                 talo.setScale(HiirulainenTerrain.randomIntFromInterval(5, 8));
                 talo.rotate(Math.PI / 2);
+                talo.mesh.parent = ymparisto;
                 return talo;
             });
         }
@@ -87,25 +100,37 @@ export function createEnvironment(scene: Scene): ObjectsModel {
             ravintola.mesh.scaling.x = 25;
             ravintola.mesh.scaling.y = 20;
             ravintola.mesh.position.y = -4;
+            ravintola.mesh.parent = ymparisto;
+
             return ravintola;
         });
 
 
     }
 
-    BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/", "rabbit.babylon")
-        .then((jee: ISceneLoaderAsyncResult) => {
-            console.log('joo skeletons', jee.skeletons);
-           // jee.meshes[1].position = new Vector3(3, 2, 3);
-            jee.meshes[0].scaling.scaleInPlace(0.1);
-            jee.meshes[0].position = new Vector3(6, 0, 3);
+    const puput  =  BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit.babylon")  
+        .then(jee => {
+            console.log('joo skeletons', jee.meshes);
+            // jee.meshes[1].position = new Vector3(3, 2, 3);
+        
+            jee.meshes[0].position = new Vector3(20, 0, 3);
             jee.meshes[0].setDirection(Vector3.Right());
-            
+            jee.meshes[0].scaling.scaleInPlace(0.1);
+        
+            scene.beginAnimation(jee.skeletons[0], 0, 70, true);
+            const childMesh = jee.meshes[0];
+            childMesh.rotationQuaternion = Quaternion.Zero();
 
-            scene.beginAnimation(jee.skeletons[0], 0,200, true);
+            /*
+            childMesh.checkCollisions = true;
+            childMesh.physicsImpostor = new PhysicsImpostor(childMesh, PhysicsImpostor.BoxImpostor, {
+                mass: DEFAULT_OBJECT_MASS
+            });
+            */
+            return [jee.meshes[0]];
         });
 
-    
+
 
 
     const aiti = new AitiObject(scene);
@@ -119,23 +144,24 @@ export function createEnvironment(scene: Scene): ObjectsModel {
     new RoadObject(scene);
     const maikit = [];
     const piilopaikat = [
-        new Vector2(-40, 20), 
-        new Vector2(-45, 35), 
-        new Vector2(0, -90), 
-        new Vector2(-5, -85), 
+        new Vector2(-40, 20),
+        new Vector2(-45, 35),
+        new Vector2(0, -90),
+        new Vector2(-5, -85),
         new Vector2(-60, 30),
         new Vector2(-80, 20),
         new Vector2(-80, 60),
-        new Vector2( 80, 60),
-        new Vector2( 70, -60),
-        new Vector2( 40, 40),
-    
+        new Vector2(80, 60),
+        new Vector2(70, -60),
+        new Vector2(40, 40),
+
     ];
     for (let i = 0; i < 10; i++) {
         const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
         maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(24, 35), 1.5, HiirulainenTerrain.randomIntFromInterval(26, 43));
         maikki.setPiilopaikka(piilopaikat[i]);
         maikit.push(maikki);
+        maikki.mesh.parent = kaverit;
     }
     createTrees(scene);
     createGrass(scene);
@@ -144,6 +170,7 @@ export function createEnvironment(scene: Scene): ObjectsModel {
         player,
         ground,
         aiti,
+        puput,
         orvokit,
         pickables,
         enemies,
@@ -193,6 +220,8 @@ function createCars(scene: Scene): AutoObject[] {
 
 function createTrees(scene: BABYLON.Scene) {
     const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);
+    const multaMaterial = new TextureMaterial(scene, "./textures/soilMud.jpeg");;
+
     for (let i = 0; i < 20; i++) {
         const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
         const treePositionX = Math.random() * (-100);
@@ -202,24 +231,25 @@ function createTrees(scene: BABYLON.Scene) {
         tree.width = 10;
         tree.height = randomHeight;
         tree.position.set(treePositionX, randomHeight - 10, Math.random() * 50 + 15);
-        const multaObject = new MultaObject(scene);
+
+        const multaObject = new MultaObject(scene, multaMaterial);
         multaObject.setPosition(-100 + (calculateWidth(multaObject) / 2) + (i * calculateWidth(multaObject)), 0.1, 26);
     }
 
     for (let i = 500; i < 600; i++) {
         const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
         const treePositionX = HiirulainenTerrain.randomIntFromInterval(30, 90);
-        const treePositionZ=  HiirulainenTerrain.randomIntFromInterval(-20, -50);
+        const treePositionZ = HiirulainenTerrain.randomIntFromInterval(-20, -50);
 
         const randomHeight = HiirulainenTerrain.randomIntFromInterval(15, 20);
         tree.position.x = treePositionX;
         tree.position.z = treePositionZ;
 
         tree.width = 10;
-        tree.height = randomHeight 
+        tree.height = randomHeight
         tree.position.y += 3;
         //tree.size = 10;
-      //  tree.position.set(treePositionX, 0, treePositionZ);
+        //  tree.position.set(treePositionX, 0, treePositionZ);
     }
 }
 

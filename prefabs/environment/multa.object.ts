@@ -5,7 +5,8 @@ export class MultaObject extends EnvironmentObject {
   private readonly MULTA_DEPTH = 30;
 
   private _mesh: Mesh;
-  constructor(private scene: Scene) {
+
+  constructor(private scene: Scene, private materialTexture: TextureMaterial) {
     super("multa");
     this._mesh = this.createMesh();
   }
@@ -21,7 +22,7 @@ export class MultaObject extends EnvironmentObject {
       
     });
     
-    mesh.material = new TextureMaterial(this.scene,"./textures/soilMud.jpeg");
+    mesh.material = this.materialTexture;
     mesh.receiveShadows = true;
     return mesh;
 

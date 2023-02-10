@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs';
-import { ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, PhysicsImpostor, Quaternion, Scene, Vector3 } from 'babylonjs';
+import { AbstractMesh, ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, Mesh, PhysicsImpostor, Quaternion, Scene, Vector3 } from 'babylonjs';
 
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
@@ -15,6 +15,8 @@ import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
 import { vilkkuminen } from './core/animations';
 import { DEFAULT_ENDING_SCORES, FALLING_POSITION_WHEN_RESTART } from "./core/config";
 import * as GUI from 'babylonjs-gui';
+import { OrvokkiObject } from './prefabs/kaverit';
+import { Player } from './prefabs/player';
 
 function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
@@ -166,19 +168,24 @@ function loadGame(engine: Engine): Promise<void> {
   scene.registerBeforeRender(() => {
     inRender(camera, objects);
   });
+  //scene.debugLayer.show();
   return scene.whenReadyAsync(true);
 
 }
 
-function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat }: ObjectsModel): void {
+function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat, puput }: ObjectsModel): void {
   if (player.position.y < FALLING_POSITION_WHEN_RESTART) {
     restartGame(camera.getScene(), 0);
     return;
   }
   orvokit.forEach(orvokki => {
-    const direction = player.mesh.position.subtract(orvokki.mesh.position);
-    orvokki.mesh.rotationQuaternion = Quaternion.Slerp(orvokki.mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
+    kaannyKohtiHiirulaista(player, orvokki.mesh, camera);
   });
+
+  puput.then(puputSync => puputSync.forEach(pupu => {
+    kaannyKohtiHiirulaista(player, pupu, camera);
+
+  }));;
   player.mesh.physicsImpostor.setAngularVelocity(player.mesh.physicsImpostor.getAngularVelocity().scale(0))
 
   piilotettavat
@@ -194,3 +201,8 @@ loadGame(engine).then(_ => {
   console.log('game loaded!');
   engine.hideLoadingUI();
 });
+function kaannyKohtiHiirulaista(player: Player, mesh: AbstractMesh, camera: HiirulainenCamera) {
+  const direction = player.mesh.position.subtract(mesh.position);
+  mesh.rotationQuaternion = Quaternion.Slerp(mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
+}
+

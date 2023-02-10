@@ -7,6 +7,7 @@ import { OrvokkiObject } from '../prefabs/kaverit';
 import { ObsticleObject } from '../prefabs/environment/obsticle.object';
 import { PickableObject } from '../prefabs/environment/pickable.object';
 import { Enemy } from '../models';
+import { AbstractMesh, Mesh } from 'babylonjs';
 
 export interface ObjectsModel {
   player: Player,
@@ -17,5 +18,6 @@ export interface ObjectsModel {
   collectibles: CollectibleModel[],
   obsticles: ObsticleObject[],
   enemies: Enemy[],
+  puput: Promise<AbstractMesh[]>
   piilotettavat: Piilotettava[]
 };

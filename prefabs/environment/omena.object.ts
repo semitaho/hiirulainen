@@ -5,7 +5,7 @@ import { TextureMaterial } from "../../textures/texture.material";
 export class OmenaObject extends PickableObject {
 
   private _mesh: Mesh;
-  constructor(scene: Scene) {
+  constructor(scene: Scene, private omenaMaterial: TextureMaterial) {
     super();
 
     this._mesh = MeshBuilder.CreateSphere("omena", {
@@ -15,7 +15,7 @@ export class OmenaObject extends PickableObject {
     this.mesh.animations = [
      createRenkaanPyoriminen()
     ];
-    this.mesh.material = new TextureMaterial(scene, "./textures/apple.jpeg");
+    this.mesh.material = omenaMaterial;
     scene.beginAnimation(this._mesh, 0, 30, true, 0.5);
   }
 

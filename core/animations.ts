@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs';
-import { Vector3 } from 'babylonjs';
+import { EasingFunction, Vector3 } from 'babylonjs';
 
 const DEFAULT_FRAMERATE = 30;
 export function createKasienheiluttelu(direction: number): BABYLON.Animation {
@@ -89,6 +89,8 @@ export function createHulahula(): BABYLON.Animation {
   return animHulahula;
 }
 
+
+
 export function createJumpHitAnimation(): BABYLON.Animation {
   const hitAnimation = new BABYLON.Animation("jumHitAnimation", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [{
@@ -122,8 +124,9 @@ export function createHitAnimation(): BABYLON.Animation {
     value:  0
   }, 
   
+  
   {
-    frame: 10,
+    frame: 7.5,
     value: Math.PI * 2
   },
 
@@ -133,10 +136,11 @@ export function createHitAnimation(): BABYLON.Animation {
   },
 
   {
-    frame: 20,
-    value: 3 *  Math.PI * 2
+    frame: 22.5,
+    value: 3*  Math.PI * 2
   },
   
+
   {
     frame: 30,
     value: 4 * Math.PI * 2
@@ -175,7 +179,7 @@ export function suljeAvaaSilmat(): BABYLON.Animation {
 }
 
 export function vilkkuminen(): BABYLON.Animation {
-  const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE * 2, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [];
   arr.push({
     frame: 0,

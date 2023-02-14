@@ -48,7 +48,7 @@ export class Rabbit implements Enemy {
       const trail = BABYLON.MeshBuilder.CreateSphere("trailBox", {
         arc: 1,
         diameterX: 0.7,
-        diameterY: 0.5,
+        diameterY: 0.3,
         diameterZ: 0.7
 
 

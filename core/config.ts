@@ -10,5 +10,12 @@ export const DEFAULT_ENDING_SCORES = "10";
 
 export const DEFAULT_JUMP_IMPULSE = 15;
 
+export const DEFAULT_FRAMERATE = 30;
+
+
 export const DEFAULT_GRAVITY = -30;
 export const XBOX_STICKVALUE_EPSILON = 0.2;
+
+export const AI_STOP_DISTANCE = 5;
+
+export const AI_DISTANCE_TO_FOLLOW = 14;

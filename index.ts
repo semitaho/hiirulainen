@@ -1,12 +1,13 @@
 import * as BABYLON from 'babylonjs';
-import { AbstractMesh, ActionEvent, ArcFollowCamera, Color3, Engine, HemisphericLight, Mesh, PhysicsImpostor, Quaternion, Scene, Vector3 } from 'babylonjs';
+import { AbstractMesh, ArcFollowCamera, Engine, HemisphericLight, Quaternion, Scene, Vector2, Vector3 } from 'babylonjs';
 
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
 import { createScene, createShadows, createUI, registerServiceWorker } from './core';
-import { calculateWidth, moveTowards, rotateTowards } from './utils/geometry.util';
+import { moveTowards, rotateTowards } from './utils/geometry.util';
 import { createEnvironment } from './prefabs/environment';
 import { ObjectsModel } from './models/objects.model';
+import { EnemyAi } from './ai';
 import { createInputControls } from './core/player.input';
 import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
@@ -15,7 +16,6 @@ import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
 import { vilkkuminen } from './core/animations';
 import { DEFAULT_ENDING_SCORES, FALLING_POSITION_WHEN_RESTART } from "./core/config";
 import * as GUI from 'babylonjs-gui';
-import { OrvokkiObject } from './prefabs/kaverit';
 import { Player } from './prefabs/player';
 
 function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
@@ -25,29 +25,25 @@ function createColliderActions(scene: Scene, { player, obsticles, ground }: Obje
 
   obsticles.forEach(obsticle =>
     player.mesh.physicsImpostor.registerOnPhysicsCollide(obsticle.mesh.physicsImpostor, () => {
-      console.log('kjoo');
       player.toggleJump(false);
     }));
-
-
-
 }
 
 function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: UIModel, { piilotettavat, enemies, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
   let pisteet = 0;
   enemies.forEach(enemy => {
     console.log('enemy', enemy);
-    const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
+    player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
       parameter: enemy.mesh
-    }, (event: ActionEvent) => {
+    }, () => {
       console.log('enemy hit', enemy);
       player.mesh.getChildren().forEach(childMesh => {
-        scene.beginDirectHierarchyAnimation(childMesh, false, [vilkkuminen()], 0, 30, true);
+        scene.beginDirectHierarchyAnimation(childMesh, false, [vilkkuminen()], 0, 60, false);
 
       });
 
-  
+
 
     }));
 
@@ -56,7 +52,7 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: U
     const iaction = player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
       parameter: pickable.mesh
-    }, (event: ActionEvent) => {
+    }, () => {
       pickable.mesh.dispose(true);
       pisteet += pickable.points;
       omenaTekstiBlock.text = "Pisteitä: " + pisteet;
@@ -71,8 +67,7 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: U
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
       parameter: piilotettava.getMesh()
     },
-      (event: ActionEvent) => {
-
+      () => {
         piilotettava.setLoydetty();
         loytyi.then((audio: HiirulainenAudio) => {
           const playbackRate = HiirulainenTerrain.randomIntFromInterval(50, 150) / 100;
@@ -123,11 +118,11 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: U
 
 }
 
-function restartGame(scene: Scene, timeoutInMillis: number = 3000): void {
+function restartGame(scene: Scene, timeoutInMillis = 3000): void {
   setTimeout(() => {
     scene.dispose();
     loadGame(scene.getEngine())
-      .then(_ => {
+      .then(() => {
         console.log('game loaded!');
         engine.hideLoadingUI();
       });
@@ -137,7 +132,7 @@ function restartGame(scene: Scene, timeoutInMillis: number = 3000): void {
 }
 
 function createActions(scene: Scene, camera: HiirulainenCamera, objects: ObjectsModel, audios: AudiosModel, ui: UIModel): void {
-  const { player, ground } = objects;
+  const { player } = objects;
   createInputControls(scene, camera, player);
   createColliderActions(scene, objects);
   createPickableActions(scene, ui, objects, audios);
@@ -147,18 +142,18 @@ function createActions(scene: Scene, camera: HiirulainenCamera, objects: Objects
 
 
 
-function loadGame(engine: Engine): Promise<void> {
+async function loadGame(engine: Engine): Promise<void> {
   engine.displayLoadingUI();
   const scene: Scene = createScene(engine);
   new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
-  const objects = createEnvironment(scene);
+  const objects = await createEnvironment(scene);
   const audios = loadAudio(scene);
   const uiModel = createUI(scene);
-  let camera: ArcFollowCamera = new HiirulainenCamera(canvas, objects.player, scene);
+  const camera: ArcFollowCamera = new HiirulainenCamera(canvas, objects.player, scene);
 
   createActions(scene, camera, objects, audios, uiModel);
   createShadows(scene, objects)
-  let resizeObserver: ResizeObserver = new ResizeObserver(_ => {
+  const resizeObserver: ResizeObserver = new ResizeObserver(() => {
     engine.resize()
   });
   engine.runRenderLoop(() => {
@@ -168,7 +163,7 @@ function loadGame(engine: Engine): Promise<void> {
   scene.registerBeforeRender(() => {
     inRender(camera, objects);
   });
-  //scene.debugLayer.show();
+  scene.debugLayer.show();
   return scene.whenReadyAsync(true);
 
 }
@@ -182,10 +177,15 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat, p
     kaannyKohtiHiirulaista(player, orvokki.mesh, camera);
   });
 
-  puput.then(puputSync => puputSync.forEach(pupu => {
-    kaannyKohtiHiirulaista(player, pupu, camera);
+  puput.forEach(pupu => {
+    if (EnemyAi.shouldFollow(player, pupu)) {
+      kaannyKohtiHiirulaista(player, pupu.mesh, camera);
+      //moveTowards(pupu.mesh, new Vector2(player.position.x, player.position.z), camera, 0.1);
+      pupu.animateMove(0.1);
+    }
+   
 
-  }));;
+  });
   player.mesh.physicsImpostor.setAngularVelocity(player.mesh.physicsImpostor.getAngularVelocity().scale(0))
 
   piilotettavat
@@ -195,14 +195,17 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat, p
     });
 }
 registerServiceWorker();
-let canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
+const canvas: HTMLCanvasElement = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
-loadGame(engine).then(_ => {
+loadGame(engine).then(() => {
   console.log('game loaded!');
   engine.hideLoadingUI();
 });
 function kaannyKohtiHiirulaista(player: Player, mesh: AbstractMesh, camera: HiirulainenCamera) {
   const direction = player.mesh.position.subtract(mesh.position);
+  if (!mesh.rotationQuaternion) {
+    mesh.rotationQuaternion = Quaternion.Zero();
+  }
   mesh.rotationQuaternion = Quaternion.Slerp(mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
 }
 

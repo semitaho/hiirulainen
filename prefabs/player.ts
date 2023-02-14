@@ -11,7 +11,7 @@ export class Player extends AbstractHiiriObject {
 
   createBoxVector(): Vector3 {
     return new Vector3(1, 3, 1);
-  }
+   }
 
   private jumping = false;
   private readonly impulse = 0.1;

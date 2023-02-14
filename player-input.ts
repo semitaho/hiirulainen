@@ -1,19 +1,17 @@
-import { ActionEvent, ActionManager, ExecuteCodeAction, Mesh, Quaternion, Scalar, Scene, Vector3 } from "babylonjs";
-import { Player } from "./prefabs/player";
+import { ActionEvent, ActionManager, ExecuteCodeAction, Scalar, Scene, Vector3 } from "babylonjs";
 
 export class PlayerInput {
 
-  public inputMap: any;
-
+  public inputMap: {[key:string]: boolean};
   private _scene: Scene;
 
   //simple movement
-  public horizontal: number = 0;
-  public vertical: number = 0;
+  public horizontal = 0;
+  public vertical = 0;
   //tracks whether or not there is movement in that axis
-  public horizontalAxis: number = 0;
-  public verticalAxis: number = 0;
-  public jumpKeyDown: boolean = false;
+  public horizontalAxis = 0;
+  public verticalAxis = 0;
+  public jumpKeyDown = false;
   public jumpCount = 0;
 
   public moveDirection: Vector3;

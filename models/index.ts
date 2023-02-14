@@ -1,1 +1,1 @@
-export { Enemy } from './enemy.interface';
+export { Enemy } from '../prefabs/enemies/enemy.model';

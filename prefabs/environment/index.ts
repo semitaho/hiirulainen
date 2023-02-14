@@ -12,7 +12,7 @@ import * as BABYLON from 'babylonjs';
 import { AutoObject } from './auto.object';
 import { MultaObject } from './multa.object';
 import { JuustoObject } from './juusto.object';
-
+import { Rabbit } from './../enemies';
 import { calculateWidth } from '../../utils/geometry.util';
 import { ObsticleObject } from './obsticle.object';
 import { OmenaObject } from './omena.object';
@@ -30,7 +30,7 @@ function createTaloWithImposter(talofn: () => TaloObject): void {
     });
 }
 
-export function createEnvironment(scene: Scene): ObjectsModel {
+export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
     createSkybox(scene);
     const ground = new HiirulainenTerrain(scene);
     const player = new Player(scene);
@@ -104,35 +104,22 @@ export function createEnvironment(scene: Scene): ObjectsModel {
 
             return ravintola;
         });
-
-
     }
 
-    const puput  =  BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit.babylon")  
-        .then(jee => {
-            console.log('joo skeletons', jee.meshes);
-            // jee.meshes[1].position = new Vector3(3, 2, 3);
-        
-            jee.meshes[0].position = new Vector3(20, 0, 3);
-            jee.meshes[0].setDirection(Vector3.Right());
-            jee.meshes[0].scaling.scaleInPlace(0.1);
-        
-            scene.beginAnimation(jee.skeletons[0], 0, 70, true);
-            const childMesh = jee.meshes[0];
-            childMesh.rotationQuaternion = Quaternion.Zero();
+    const jee = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit.babylon");
 
-            /*
-            childMesh.checkCollisions = true;
-            childMesh.physicsImpostor = new PhysicsImpostor(childMesh, PhysicsImpostor.BoxImpostor, {
-                mass: DEFAULT_OBJECT_MASS
-            });
-            */
-            return [jee.meshes[0]];
-        });
+    console.log('joo skeletons', jee.meshes);
+    // jee.meshes[1].position = new Vector3(3, 2, 3);
 
 
 
-
+    /*
+    childMesh.checkCollisions = true;
+    childMesh.physicsImpostor = new PhysicsImpostor(childMesh, PhysicsImpostor.BoxImpostor, {
+        mass: DEFAULT_OBJECT_MASS
+    });
+    */
+   const puput = [new Rabbit(scene, jee)];
     const aiti = new AitiObject(scene);
     aiti.setPosition(40, 2, 47);
     createTaloWithImposter(() => {
@@ -165,7 +152,7 @@ export function createEnvironment(scene: Scene): ObjectsModel {
     }
     createTrees(scene);
     createGrass(scene);
-    const enemies = createCars(scene);
+    const enemies = [...createCars(scene), ...puput];
     return {
         player,
         ground,

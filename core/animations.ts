@@ -1,7 +1,7 @@
 import * as BABYLON from 'babylonjs';
-import { EasingFunction, Vector3 } from 'babylonjs';
+import {  AbstractMesh, Vector3 } from 'babylonjs';
+import { DEFAULT_FRAMERATE } from './config';
 
-const DEFAULT_FRAMERATE = 30;
 export function createKasienheiluttelu(direction: number): BABYLON.Animation {
   const frameRate = 10;
   const kasienheiluttelu = new BABYLON.Animation("kasienheiluttelu", "rotation", frameRate, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
@@ -28,7 +28,7 @@ export function moveKasi(direction: number): BABYLON.Animation {
     value: 0
   }, {
     frame: 15,
-    value: (Math.PI / 4)*direction
+    value: (Math.PI / 4) * direction
   },
   {
     frame: 30,
@@ -95,9 +95,9 @@ export function createJumpHitAnimation(): BABYLON.Animation {
   const hitAnimation = new BABYLON.Animation("jumHitAnimation", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [{
     frame: 0,
-    value:  0
-  }, 
-  
+    value: 0
+  },
+
   {
     frame: 13,
     value: 0.5
@@ -111,7 +111,33 @@ export function createJumpHitAnimation(): BABYLON.Animation {
     frame: 30,
     value: 0
   }
-];
+  ];
+
+  hitAnimation.setKeys(arr);
+  return hitAnimation;
+}
+
+
+export function createRabbitJumpAnimation(mesh: AbstractMesh): BABYLON.Animation {
+  const hitAnimation = new BABYLON.Animation("rabbitJumpAnimation", "position", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const scaleInPlace2 = mesh.forward.scaleInPlace(2.5);
+  const scaleInPlace4 = scaleInPlace2.scale(2.5);
+
+  const arr = [{
+    frame: 0,
+    value: mesh.position
+  },
+
+  {
+    frame: 15,
+    value: mesh.position.add(new Vector3(scaleInPlace2.x, 2.5, scaleInPlace2.z))
+  },
+
+  {
+    frame: 30,
+    value: mesh.position.add(new Vector3(scaleInPlace4.x, 0, scaleInPlace4.z))
+  }
+  ];
 
   hitAnimation.setKeys(arr);
   return hitAnimation;
@@ -121,10 +147,10 @@ export function createHitAnimation(): BABYLON.Animation {
   const hitAnimation = new BABYLON.Animation("hitAnimation", "rotation.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [{
     frame: 0,
-    value:  0
-  }, 
-  
-  
+    value: 0
+  },
+
+
   {
     frame: 7.5,
     value: Math.PI * 2
@@ -132,14 +158,14 @@ export function createHitAnimation(): BABYLON.Animation {
 
   {
     frame: 15,
-    value: 2*  Math.PI * 2
+    value: 2 * Math.PI * 2
   },
 
   {
     frame: 22.5,
-    value: 3*  Math.PI * 2
+    value: 3 * Math.PI * 2
   },
-  
+
 
   {
     frame: 30,
@@ -154,15 +180,15 @@ export function suljeAvaaSilmat(): BABYLON.Animation {
   const suljeAvaaAnimation = new BABYLON.Animation("suljeAvaa", "scaling", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const arr = [{
     frame: 0,
-    value:  Vector3.One()
-  }, 
+    value: Vector3.One()
+  },
   {
     frame: 14,
     value: Vector3.One()
   },
   {
     frame: 15,
-    value: new Vector3 (1,0,0)
+    value: new Vector3(1, 0, 0)
   },
 
   {
@@ -172,45 +198,50 @@ export function suljeAvaaSilmat(): BABYLON.Animation {
 
   {
     frame: 30,
-    value:  Vector3.One()
+    value: Vector3.One()
   }];
   suljeAvaaAnimation.setKeys(arr);
   return suljeAvaaAnimation;
 }
 
 export function vilkkuminen(): BABYLON.Animation {
-  const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE * 2, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const blinkingAnimation = new BABYLON.Animation("vilkkuminen", "visibility", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [];
-  arr.push({
-    frame: 0,
-    value: 1
-  });
+ 
 
   //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
-  arr.push({
-    frame: 5,
-    value: 0
-  });
-  arr.push({
-    frame: 10,
-    value: 1
-  });
-  arr.push({
-    frame: 15,
-    value: 0
-  });
-  arr.push({
-    frame: 20,
-    value: 1
-  });
-  arr.push({
-    frame: 25,
-    value: 0
-  });
-  arr.push({
-    frame: 30,
-    value: 1
-  });
+
+  for (let kierros = 0; kierros <= 1; kierros++) {
+
+    arr.push({
+      frame: 0 + (DEFAULT_FRAMERATE * kierros),
+      value: 1
+    });
+    arr.push({
+      frame: 5 + (DEFAULT_FRAMERATE * kierros) ,
+      value: 0
+    });
+    arr.push({
+      frame: 10 + (DEFAULT_FRAMERATE * kierros),
+      value: 1
+    });
+    arr.push({
+      frame: 15 + (DEFAULT_FRAMERATE * kierros),
+      value: 0
+    });
+    arr.push({
+      frame: 20 + (DEFAULT_FRAMERATE * kierros),
+      value: 1
+    });
+    arr.push({
+      frame: 25 + (DEFAULT_FRAMERATE * kierros),
+      value: 0
+    });
+    arr.push({
+      frame: 30 + (DEFAULT_FRAMERATE * kierros),
+      value: 1
+    })
+  }
   blinkingAnimation.setKeys(arr);
   return blinkingAnimation;
 

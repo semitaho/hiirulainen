@@ -1,7 +1,7 @@
 import { HiirulainenTerrain } from '../hiirulainen.terrain';
 import { AitiObject, MaikkiObject, OrvokkiObject } from '../kaverit';
 import { TimanttiObject } from './timantti.object';
-import { createRenkaanPyoriminen } from "./../../core/animations";
+import { createCarDriveAnimation, createRenkaanPyoriminen } from "./../../core/animations";
 import { NurmikkoObject } from './nurmikko.object';
 import { ISceneLoaderAsyncResult, PhysicsImpostor, Quaternion, Scene, SceneLoader, Vector2, Vector3 } from 'babylonjs';
 import { ObjectsModel } from '../../models/objects.model';
@@ -13,6 +13,7 @@ import { AutoObject } from './auto.object';
 import { MultaObject } from './multa.object';
 import { JuustoObject } from './juusto.object';
 import { Rabbit } from './../enemies';
+import { Path } from './../../ai';
 import { calculateWidth } from '../../utils/geometry.util';
 import { ObsticleObject } from './obsticle.object';
 import { OmenaObject } from './omena.object';
@@ -67,7 +68,6 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
         newOmena.setPosition(positionX, DEFAULT_PICKABLE_HEIGHT_POSITION, 10);
         pickables.push(newOmena);
         newOmena.mesh.parent = ymparisto;
-
     }
 
     for (let positionz = -80; positionz <= 10; positionz = positionz + 5) {
@@ -106,20 +106,8 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
         });
     }
 
-    const jee = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit.babylon");
-
-    console.log('joo skeletons', jee.meshes);
-    // jee.meshes[1].position = new Vector3(3, 2, 3);
-
-
-
-    /*
-    childMesh.checkCollisions = true;
-    childMesh.physicsImpostor = new PhysicsImpostor(childMesh, PhysicsImpostor.BoxImpostor, {
-        mass: DEFAULT_OBJECT_MASS
-    });
-    */
-   const puput = [new Rabbit(scene, jee)];
+    const meshImport = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit.babylon");
+    const puput = createRabbits(scene, meshImport);
     const aiti = new AitiObject(scene);
     aiti.setPosition(40, 2, 47);
     createTaloWithImposter(() => {
@@ -168,6 +156,26 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
 
 }
 
+function createRabbits(scene: Scene, meshImport: ISceneLoaderAsyncResult): Rabbit[] {
+    const rabbitCount = 5;
+    const puput = [];
+    const paths = [];
+    paths.push(new Path([new Vector2(2, 5), new Vector2(1, 10), new Vector2(-4, -4)]));
+    paths.push(new Path([new Vector2(10, 5), new Vector2(-4, 10), new Vector2(-4, -4)]));
+    paths.push(new Path([new Vector2(-3, -6), new Vector2(-1, 10), new Vector2(-4, -10)]));
+    paths.push(new Path([new Vector2(0, 0), new Vector2(1, 10)]));
+    paths.push(new Path([new Vector2(-10, -6), new Vector2(7, 2)]));
+
+    for (let i =0 ; i< rabbitCount; i++) {
+        const pupu = new Rabbit(scene, meshImport);
+        puput.push(pupu);
+        pupu.mesh.position = new Vector3(i*10, 0, 3);
+        pupu.path = paths[i];
+    }
+    meshImport.meshes[0].dispose();
+    return puput;
+}
+
 function createGrass(scene: BABYLON.Scene) {
     const nurmikkoCount = 15;
     for (let i = 0; i < nurmikkoCount; i++) {
@@ -178,32 +186,15 @@ function createGrass(scene: BABYLON.Scene) {
 
 function createCars(scene: Scene): AutoObject[] {
     const car = new AutoObject(scene);
-    const animCar = new BABYLON.Animation("carAnimation", "position.x", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-    const carKeys = [];
-
-    carKeys.push({
-        frame: 0,
-        value: -100
-    });
-
-    carKeys.push({
-        frame: 150,
-        value: 0
-    });
-
-    carKeys.push({
-        frame: 300,
-        value: 100
-    });
-
-    animCar.setKeys(carKeys);
-
+    const animCar = createCarDriveAnimation();
     car.mesh.animations = [];
     car.mesh.animations.push(animCar);
 
     scene.beginAnimation(car.mesh, 0, 300, true);
     return [car];
 }
+
+
 
 function createTrees(scene: BABYLON.Scene) {
     const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);

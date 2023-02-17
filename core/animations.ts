@@ -117,9 +117,32 @@ export function createJumpHitAnimation(): BABYLON.Animation {
   return hitAnimation;
 }
 
+export function createCarDriveAnimation() {
+  const animCar = new BABYLON.Animation("carAnimation", "position.x", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+  const carKeys = [];
+
+  carKeys.push({
+      frame: 0,
+      value: -100
+  });
+
+  carKeys.push({
+      frame: 150,
+      value: 0
+  });
+
+  carKeys.push({
+      frame: 300,
+      value: 100
+  });
+
+  animCar.setKeys(carKeys);
+  return animCar;
+}
+
 
 export function createRabbitJumpAnimation(mesh: AbstractMesh): BABYLON.Animation {
-  const hitAnimation = new BABYLON.Animation("rabbitJumpAnimation", "position", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const hitAnimation = new BABYLON.Animation("rabbitJumpAnimation", "position", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
   const scaleInPlace2 = mesh.forward.scaleInPlace(2.5);
   const scaleInPlace4 = scaleInPlace2.scale(2.5);
 

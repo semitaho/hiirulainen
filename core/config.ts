@@ -19,3 +19,5 @@ export const XBOX_STICKVALUE_EPSILON = 0.2;
 export const AI_STOP_DISTANCE = 5;
 
 export const AI_DISTANCE_TO_FOLLOW = 14;
+
+export const TIME_IN_WAYPOINT_MS = 4000;

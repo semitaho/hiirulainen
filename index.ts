@@ -32,7 +32,6 @@ function createColliderActions(scene: Scene, { player, obsticles, ground }: Obje
 function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: UIModel, { piilotettavat, enemies, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
   let pisteet = 0;
   enemies.forEach(enemy => {
-    console.log('enemy', enemy);
     player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
       trigger: BABYLON.ActionManager.OnIntersectionEnterTrigger,
       parameter: enemy.mesh
@@ -178,11 +177,19 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat, p
   });
 
   puput.forEach(pupu => {
+    /*
     if (EnemyAi.shouldFollow(player, pupu)) {
       kaannyKohtiHiirulaista(player, pupu.mesh, camera);
       //moveTowards(pupu.mesh, new Vector2(player.position.x, player.position.z), camera, 0.1);
       pupu.animateMove(0.1);
     }
+    
+    else {
+    */
+      EnemyAi.followPath(camera, engine.getDeltaTime(), pupu);
+    
+    //}
+
    
 
   });

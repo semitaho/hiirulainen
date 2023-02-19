@@ -1,5 +1,5 @@
 import { AbstractMesh, ArcFollowCamera, Mesh, Quaternion, Vector2, Vector3 } from "babylonjs";
-import { EnvironmentObject } from "../prefabs/environment/environment.object";
+import { EnvironmentObject } from "../environment/environment.object";
 
 export function calculateWidth(object: EnvironmentObject): number {
    const boundingBox = object.mesh.getBoundingInfo().boundingBox;
@@ -10,32 +10,40 @@ export function convertColor(r: number, g: number, b:number): BABYLON.Color3 {
    return new BABYLON.Color3(r / 255, g / 255, b / 255);
 }
 
-export function moveTowards(mesh: AbstractMesh, location: Vector2, camera: ArcFollowCamera, speed: number = 0.1, jump = false): void {
+export function moveTowards(mesh: AbstractMesh, location: Vector3, camera: ArcFollowCamera, speed: number = 0.1, jump = false): void {
 
-   if (Vector3.Distance(mesh.position, new Vector3(location.x, mesh.position.y, location.y)) < 0.5) {
+   const distance = Vector3.Distance(mesh.position, new Vector3(location.x, mesh.position.y, location.z));
+   if (distance < 0.5) {
       return;
    }
-   let angle = Math.atan2(location.x - mesh.position.x, location.y - mesh.position.z);
-   angle += camera.rotation.y;
-   let targ = Quaternion.FromEulerAngles(0, angle, 0);
-   if (!mesh.rotationQuaternion) {
-      mesh.rotationQuaternion = Quaternion.Zero();
-   }
-   mesh.rotationQuaternion = Quaternion.Slerp(mesh.rotationQuaternion, targ, 0.2);
-   if (jump) {
+   rotateTowards(mesh, location, camera);
+ 
+     if (jump) {
       mesh.applyImpulse(Vector3.Up().scale(100), mesh.position);
    }
-   mesh.translate(new Vector3(0, 0, 1), speed);
+   mesh.translate(Vector3.Forward(), speed);
 }
 
-export function rotateTowards(directionVector: Vector3, camera: ArcFollowCamera): Quaternion {
-   const input = directionVector.normalize();
-   if (input.length() === 0) {
-      return;
+export function toVector3(vec2: Vector2): Vector3 {
+   return new Vector3(vec2.x, 0, vec2.y);
+}
+
+export function isRotated(currentRotation: Quaternion, targetRotation: Quaternion): boolean {
+   return Math.abs(targetRotation.y - currentRotation.y) < 0.1;
+}
+
+export function rotateTowards(mesh: AbstractMesh, positionToRotate: Vector3, camera: ArcFollowCamera): boolean {
+
+   const direction = positionToRotate.subtract(mesh.position);
+
+   const input = direction.normalize();
+    if (!mesh.rotationQuaternion) {
+      mesh.rotationQuaternion = Quaternion.Zero();
     }
 
-    let angle = Math.atan2(directionVector.x, directionVector.z);
+    let angle = Math.atan2(input.x, input.z);
     angle += camera.rotation.y;
     let targ = Quaternion.FromEulerAngles(0, angle, 0);
-    return targ;
-}
+    mesh.rotationQuaternion = Quaternion.Slerp(mesh.rotationQuaternion, targ, 0.2);
+    return isRotated(mesh.rotationQuaternion, targ);
+   }

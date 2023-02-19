@@ -4,19 +4,19 @@ import { AbstractMesh, ArcFollowCamera, Engine, HemisphericLight, Quaternion, Sc
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
 import { createScene, createShadows, createUI, registerServiceWorker } from './core';
-import { moveTowards, rotateTowards } from './utils/geometry.util';
-import { createEnvironment } from './prefabs/environment';
+import { moveTowards, rotateTowards, toVector3 } from './utils/geometry.util';
+import { createEnvironment } from './environment';
 import { ObjectsModel } from './models/objects.model';
 import { EnemyAi } from './ai';
-import { createInputControls } from './core/player.input';
-import { HiirulainenCamera } from './prefabs/hiirulainen.camera';
+import { createInputControls } from './player/player.input';
+import { HiirulainenCamera } from './core/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
-import { HiirulainenTerrain } from './prefabs/hiirulainen.terrain';
+import { HiirulainenTerrain } from './core/hiirulainen.terrain';
 import { vilkkuminen } from './core/animations';
 import { DEFAULT_ENDING_SCORES, FALLING_POSITION_WHEN_RESTART } from "./core/config";
 import * as GUI from 'babylonjs-gui';
-import { Player } from './prefabs/player';
+import { Player } from './player/player';
 
 function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
   player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
@@ -142,10 +142,14 @@ function createActions(scene: Scene, camera: HiirulainenCamera, objects: Objects
 
 
 async function loadGame(engine: Engine): Promise<void> {
+ 
   engine.displayLoadingUI();
+  console.log('doing some stuff...');
   const scene: Scene = createScene(engine);
+  
   new HemisphericLight("light1", new Vector3(1, 1, 0), scene);
   const objects = await createEnvironment(scene);
+ 
   const audios = loadAudio(scene);
   const uiModel = createUI(scene);
   const camera: ArcFollowCamera = new HiirulainenCamera(canvas, objects.player, scene);
@@ -162,8 +166,9 @@ async function loadGame(engine: Engine): Promise<void> {
   scene.registerBeforeRender(() => {
     inRender(camera, objects);
   });
-  scene.debugLayer.show();
+ 
   return scene.whenReadyAsync(true);
+
 
 }
 
@@ -177,28 +182,14 @@ function inRender(camera: HiirulainenCamera, { orvokit, player, piilotettavat, p
   });
 
   puput.forEach(pupu => {
-    /*
-    if (EnemyAi.shouldFollow(player, pupu)) {
-      kaannyKohtiHiirulaista(player, pupu.mesh, camera);
-      //moveTowards(pupu.mesh, new Vector2(player.position.x, player.position.z), camera, 0.1);
-      pupu.animateMove(0.1);
-    }
-    
-    else {
-    */
-      EnemyAi.followPath(camera, engine.getDeltaTime(), pupu);
-    
-    //}
-
-   
-
+    EnemyAi.executeBehaviour(camera, engine.getDeltaTime(), pupu, player);
   });
   player.mesh.physicsImpostor.setAngularVelocity(player.mesh.physicsImpostor.getAngularVelocity().scale(0))
 
   piilotettavat
     .filter(piilotettava => piilotettava.missing)
     .forEach(piilotettava => {
-      moveTowards(piilotettava.getMesh(), piilotettava.getPiilopaikka(), camera);
+      moveTowards(piilotettava.getMesh(), toVector3(piilotettava.getPiilopaikka()), camera);
     });
 }
 registerServiceWorker();
@@ -209,10 +200,7 @@ loadGame(engine).then(() => {
   engine.hideLoadingUI();
 });
 function kaannyKohtiHiirulaista(player: Player, mesh: AbstractMesh, camera: HiirulainenCamera) {
-  const direction = player.mesh.position.subtract(mesh.position);
-  if (!mesh.rotationQuaternion) {
-    mesh.rotationQuaternion = Quaternion.Zero();
-  }
-  mesh.rotationQuaternion = Quaternion.Slerp(mesh.rotationQuaternion, rotateTowards(direction, camera), 0.2);
+  rotateTowards(mesh, player.mesh.position, camera);
+  
 }
 

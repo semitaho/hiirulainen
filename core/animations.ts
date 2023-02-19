@@ -1,5 +1,6 @@
 import * as BABYLON from 'babylonjs';
-import {  AbstractMesh, Vector3 } from 'babylonjs';
+import {  AbstractMesh, Vector2, Vector3 } from 'babylonjs';
+import { toVector3 } from '../utils/geometry.util';
 import { DEFAULT_FRAMERATE } from './config';
 
 export function createKasienheiluttelu(direction: number): BABYLON.Animation {
@@ -141,10 +142,11 @@ export function createCarDriveAnimation() {
 }
 
 
-export function createRabbitJumpAnimation(mesh: AbstractMesh): BABYLON.Animation {
-  const hitAnimation = new BABYLON.Animation("rabbitJumpAnimation", "position", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-  const scaleInPlace2 = mesh.forward.scaleInPlace(2.5);
-  const scaleInPlace4 = scaleInPlace2.scale(2.5);
+export function createRabbitMoveJumpAnimation(mesh: AbstractMesh, target: Vector2): BABYLON.Animation {
+  const hitAnimation = new BABYLON.Animation("rabbitJumpAnimation", "position", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const moveVector = toVector3(target).subtract(mesh.position).normalize();
+  const moveVector2 = mesh.position.add(moveVector.scaleInPlace(1.5));
+  const moveVector4 = mesh.position.add(moveVector.scaleInPlace(3));
 
   const arr = [{
     frame: 0,
@@ -153,12 +155,12 @@ export function createRabbitJumpAnimation(mesh: AbstractMesh): BABYLON.Animation
 
   {
     frame: 15,
-    value: mesh.position.add(new Vector3(scaleInPlace2.x, 2.5, scaleInPlace2.z))
+    value: new Vector3(moveVector2.x, 2.5, moveVector2.z)
   },
 
   {
     frame: 30,
-    value: mesh.position.add(new Vector3(scaleInPlace4.x, 0, scaleInPlace4.z))
+    value:  new Vector3(moveVector4.x, 0, moveVector4.z)
   }
   ];
 

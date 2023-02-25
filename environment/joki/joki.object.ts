@@ -13,7 +13,7 @@ export class JokiObject extends EnvironmentObject implements Enemy {
       depth: 20
 
     }, scene);
-    const bumpAssetUrl = "/assets/joki/waterbump.png";
+    const bumpAssetUrl = "./assets/joki/waterbump.png";
     const material = new TextureMaterial(scene, bumpAssetUrl);
     material.ambientTexture = new Texture(bumpAssetUrl)
     material.alpha = 0.5;

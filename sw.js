@@ -7,7 +7,13 @@ const CACHED_RESOURCES = [
   "audio/tunetank.mp3",
   "audio/pickup.mp3",
 
-  
+  "assets/rabbit/0.jpg",
+  "assets/talo/cubehouse.png",  
+  "assets/talo/roof.jpg",  
+  "assets/tree/tree.babylon",  
+  "assets/joki/waterbump.png",  
+  "assets/auto/car.png",  
+  "assets/auto/wheel.png",  
   "audio/Yksi.m4a",
   "audio/Kaksi.m4a",
   "audio/Kolme.m4a",

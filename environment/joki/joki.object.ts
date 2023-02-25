@@ -3,7 +3,8 @@ import { EnvironmentObject } from "../environment.object";
 import * as BABYLON from 'babylonjs';
 import { TextureMaterial } from "../../textures/texture.material";
 import { createDefaultImpostor } from "../../core/physics.core";
-export class JokiObject extends EnvironmentObject {
+import { Enemy } from "../../models";
+export class JokiObject extends EnvironmentObject implements Enemy {
   constructor(scene: Scene) {
     super("joki");
     this.mainMesh = BABYLON.MeshBuilder.CreateBox("riverSurface", {
@@ -20,6 +21,9 @@ export class JokiObject extends EnvironmentObject {
     this.mainMesh.material = material;
     this.mainMesh.receiveShadows = true;
     createDefaultImpostor(this.mainMesh, true);
+  }
+  get hitPoints(): number {
+    return 10;
   }
 
 }

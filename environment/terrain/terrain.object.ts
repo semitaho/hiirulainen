@@ -14,7 +14,7 @@ export class TerrainObject implements Groundable {
       width: 200,
       height,
     });
-    const multaMaterial = new TextureMaterial(scene, "./textures/soilMud.jpeg");
+    const multaMaterial = new TextureMaterial(scene, "/assets/multa/soilMud.jpeg");
 
     this.mesh.material = multaMaterial;
     this.mesh.alphaIndex = 2;

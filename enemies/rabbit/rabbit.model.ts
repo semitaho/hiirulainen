@@ -35,6 +35,9 @@ export class Rabbit implements Enemy {
     //createDefaultImpostor(this._mesh, true);
     this.animatedSkeleton = this.sceneLoaderAsync.skeletons[0];
   }
+  get hitPoints(): number {
+    return 15;
+  }
 
 
   get mesh(): AbstractMesh {

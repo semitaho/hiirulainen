@@ -4,4 +4,6 @@ export interface Enemy {
 
 
   get mesh(): AbstractMesh;
+
+  get hitPoints(): number;
 }

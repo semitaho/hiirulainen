@@ -1,9 +1,10 @@
-import { AdvancedDynamicTexture, TextBlock } from "babylonjs-gui";
+import { AdvancedDynamicTexture, Slider, TextBlock } from "babylonjs-gui";
 
 export interface UIModel {
   ui: AdvancedDynamicTexture,
   scores: TextBlock,
-  pisteet: number;
+  pisteet: number,
+  slider: Slider,
   omenaTekstiBlock: TextBlock;
 
 }

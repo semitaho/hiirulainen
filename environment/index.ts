@@ -30,7 +30,7 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
     const ymparisto = new BABYLON.TransformNode("ymparisto");
 
     const orvokkiObject = new OrvokkiObject(scene);
-    orvokkiObject.setPosition(-15,2,50);
+    orvokkiObject.setPosition(8,2,35);
     orvokkiObject.mesh.parent = ymparisto;
 
     const collectibles = [];
@@ -38,9 +38,6 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
     const kaverit = new BABYLON.TransformNode("kaverit");
 
     const orvokit = [];
-
-    
-
 
     orvokit.push(orvokkiObject);
 

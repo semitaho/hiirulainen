@@ -46,6 +46,9 @@ export class AutoObject extends EnvironmentObject implements Enemy {
     this._mesh.position.y = 1.5;
 
   }
+  get hitPoints(): number {
+    return 75;
+  }
 
   get mesh(): Mesh {
     return this._mesh;

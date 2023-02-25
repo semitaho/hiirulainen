@@ -32,7 +32,7 @@ function createColliderActions(scene: Scene, { player, obsticles, grounds }: Obj
     }));
 }
 
-function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: UIModel, { piilotettavat, enemies, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
+function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock, slider }: UIModel, { piilotettavat, enemies, player, pickables }: ObjectsModel, { loytyi }: AudiosModel): void {
   let pisteet = 0;
   enemies.forEach(enemy => {
     player.mesh.actionManager.registerAction(new BABYLON.ExecuteCodeAction({
@@ -40,10 +40,16 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: U
       parameter: enemy.mesh
     }, () => {
       console.log('enemy hit', enemy);
+      slider.value -= enemy.hitPoints;
+      if (slider.value <= 0) {
+        console.log("begin DIE!");
+      }
+      /*
       player.mesh.getChildren().forEach(childMesh => {
         scene.beginDirectHierarchyAnimation(childMesh, false, [vilkkuminen()], 0, 60, false);
 
       });
+      */
 
 
 

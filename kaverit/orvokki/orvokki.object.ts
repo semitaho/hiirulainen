@@ -1,7 +1,7 @@
 import { Color3, Mesh, PBRMaterial, PhysicsImpostor, Quaternion, Scene, StandardMaterial, TransformNode, Vector3 } from "babylonjs";
 import { AbstractHiiriObject } from "../../models";
 import { createHulahula, moveKasi } from "../../core/animations";
-import { HiirulainenTerrain } from "../../core/hiirulainen.terrain";
+import { randomIntFromInterval } from "../../utils/geometry.util";
 
 export class OrvokkiObject extends AbstractHiiriObject {
   constructor(protected scene: Scene) {
@@ -27,7 +27,7 @@ export class OrvokkiObject extends AbstractHiiriObject {
   }
 
   private fireAnimations(): void {
-    const animationRandom = HiirulainenTerrain.randomIntFromInterval(500, 2000);
+    const animationRandom = randomIntFromInterval(500, 2000);
     setTimeout(() => {
       this.scene.beginAnimation(this.vartaloMesh, 0, 60, true);
       this.scene.beginAnimation(this.leftKasiMesh, 0, 30, true);

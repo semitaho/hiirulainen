@@ -9,8 +9,8 @@ export class ObsticleObject extends EnvironmentObject {
     super("obsticle");
     this._mesh = MeshBuilder.CreateBox("obsticleBox", {
       height: 1,
-      width: 10,
-      depth: 10,
+      width: 5,
+      depth: 5,
     
     });
 

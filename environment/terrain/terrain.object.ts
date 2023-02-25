@@ -1,22 +1,22 @@
 
 import { Color4, GroundMesh, Mesh, MeshBuilder, PhysicsImpostor, Scene, StandardMaterial, Texture, Vector2, Vector3 } from "babylonjs";
-import "../extensions/babylon.dynamicTerrain.js";
+import "../../extensions/babylon.dynamicTerrain.js";
 import * as BABYLON from 'babylonjs';
+import { Groundable} from './../../models/groundable.model';
+import { TextureMaterial } from "../../textures/texture.material";
 
-export class HiirulainenTerrain {
+export class TerrainObject implements Groundable {
 
   public mesh: BABYLON.GroundMesh;
-  public constructor(scene: Scene) {
+  public constructor(scene: Scene, height: number) {
 
-    this.mesh = MeshBuilder.CreateGround("hiirulainenGround", {
+    this.mesh = MeshBuilder.CreateGround("hiirulainenGround"+Math.random(), {
       width: 200,
-      height: 200,
+      height,
     });
+    const multaMaterial = new TextureMaterial(scene, "./textures/soilMud.jpeg");
 
-
-    const terrainMaterial = new BABYLON.StandardMaterial("materialGround");
-    terrainMaterial.diffuseTexture = new BABYLON.Texture("./textures/snow/snow_02_diff_4k.jpg");
-    this.mesh.material = terrainMaterial;
+    this.mesh.material = multaMaterial;
     this.mesh.alphaIndex = 2;
     this.createTerrainCollider();
     this.mesh.receiveShadows = true;
@@ -38,10 +38,6 @@ export class HiirulainenTerrain {
       restitution: 0,
     });
     this.mesh.checkCollisions = false;
-  }
-
-  public static randomIntFromInterval(min: number, max: number): number { // min and max included 
-    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   public getBounds(): Vector3[] {

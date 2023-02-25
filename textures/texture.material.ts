@@ -7,7 +7,4 @@ export class TextureMaterial extends StandardMaterial {
     const texture = new Texture(path);
     this.diffuseTexture = texture;
   }
-
-
-
 }

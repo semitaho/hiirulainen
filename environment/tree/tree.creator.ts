@@ -1,10 +1,9 @@
-import { TextureMaterial } from './../../textures/texture.material';
 import * as BABYLON from 'babylonjs';
-import { HiirulainenTerrain } from '../../core/hiirulainen.terrain';
 import { MultaObject } from '../multa/multa.object';
-import { calculateWidth } from '../../utils/geometry.util';
+import { calculateWidth, randomIntFromInterval } from '../../utils/geometry.util';
 import { ISceneLoaderAsyncResult, Scene } from 'babylonjs';
 import { Tree } from './tree.object';
+import { TextureMaterial } from '../../textures/texture.material';
 export async function createTrees(scene: BABYLON.Scene, parent: BABYLON.TransformNode) {
  createSpriteTrees(scene, parent);
  createMeshTrees(scene, parent);
@@ -12,12 +11,12 @@ export async function createTrees(scene: BABYLON.Scene, parent: BABYLON.Transfor
 
 function createSpriteTrees(scene: BABYLON.Scene, parent: BABYLON.TransformNode) {
   const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);
-  const multaMaterial = new TextureMaterial(scene, "./textures/soilMud.jpeg");;
+  const multaMaterial = new TextureMaterial(scene, "/textures/soilMud.jpeg");;
 
   for (let i = 0; i < 20; i++) {
     const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
     const treePositionX = Math.random() * (-100);
-    const randomHeight = HiirulainenTerrain.randomIntFromInterval(15, 20);
+    const randomHeight = randomIntFromInterval(15, 20);
     tree.position.x = treePositionX;
 
     tree.width = 10;
@@ -29,10 +28,10 @@ function createSpriteTrees(scene: BABYLON.Scene, parent: BABYLON.TransformNode) 
 
   for (let i = 500; i < 600; i++) {
     const tree = new BABYLON.Sprite("tree", spriteManagerTrees);
-    const treePositionX = HiirulainenTerrain.randomIntFromInterval(30, 90);
-    const treePositionZ = HiirulainenTerrain.randomIntFromInterval(-20, -50);
+    const treePositionX = randomIntFromInterval(30, 90);
+    const treePositionZ = randomIntFromInterval(-20, -50);
 
-    const randomHeight = HiirulainenTerrain.randomIntFromInterval(15, 20);
+    const randomHeight = randomIntFromInterval(15, 20);
     tree.position.x = treePositionX;
     tree.position.z = treePositionZ;
 
@@ -55,13 +54,13 @@ async function createMeshTrees(scene: Scene, parent: BABYLON.TransformNode): Pro
     tree.setPosition(i, 0,  0);
   }
   
-  const HARVENNUSKERROIN = 7;
-  for (let i = 0; i < 10; i++) {
+  const HARVENNUSKERROIN = 9;
+  for (let i = 0; i < 5; i++) {
     const tree = new Tree(parent, sceneLoaderResult);
     tree.setScale(scale);
     tree.setPosition(34, 0,  i * HARVENNUSKERROIN);
   }
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     const tree = new Tree(parent, sceneLoaderResult);
     tree.setScale(scale);
     tree.setPosition( 0, 0,  i * HARVENNUSKERROIN);

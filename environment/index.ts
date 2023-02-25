@@ -1,7 +1,4 @@
-import { HiirulainenTerrain } from '../core/hiirulainen.terrain';
 import { AitiObject, MaikkiObject, OrvokkiObject } from '../kaverit';
-import { createCarDriveAnimation, createRenkaanPyoriminen } from "./../core/animations";
-import { NurmikkoObject } from './nurmikko/nurmikko.object';
 import { ISceneLoaderAsyncResult, PhysicsImpostor, Quaternion, Scene, SceneLoader, Vector2, Vector3 } from 'babylonjs';
 import { ObjectsModel } from '../models/objects.model';
 import { Player } from '../player/player';
@@ -15,48 +12,48 @@ import { createTrees } from './tree';
 import { Path } from './../ai';
 import { createGrass } from './nurmikko/nurmikko.creator';
 import { createCars } from './auto/auto.creator';
+import { createObsticles } from './obsticles/obsticle.creator';
 import { ObsticleObject } from './obsticles/obsticle.object';
 import { OmenaObject } from '../pickables/omena/omena.object';
 import { DEFAULT_OBJECT_MASS, DEFAULT_PICKABLE_HEIGHT_POSITION, PLAYER_STARTING_POINT } from '../core/config';
 import { TextureMaterial } from '../textures/texture.material';
-
-
-function createTaloWithImposter(talofn: () => TaloObject): void {
-    const talo = talofn();
-    talo.perustuksetMesh.physicsImpostor = new PhysicsImpostor(talo.perustuksetMesh, PhysicsImpostor.BoxImpostor, {
-        mass: 0,
-        ignoreParent: true,
-        friction: 1,
-        restitution: 0,
-    });
-}
+import { createJoki } from './joki/joki.creator';
+import { createTalo } from './talo/talo.creator';
+import { createTerrains } from './terrain/terrain.creator';
+import { randomIntFromInterval } from '../utils/geometry.util';
 
 export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
     createSkybox(scene);
-    const ground = new HiirulainenTerrain(scene);
+    const groundables = createTerrains(scene);
     const player = new Player(scene);
     player.position = PLAYER_STARTING_POINT;
-
-    const collectibles = [];
-    const bounds = ground.getBounds();
-    const kaverit = new BABYLON.TransformNode("kaverit");
     const ymparisto = new BABYLON.TransformNode("ymparisto");
 
+    const orvokkiObject = new OrvokkiObject(scene);
+    orvokkiObject.setPosition(-15,2,50);
+    orvokkiObject.mesh.parent = ymparisto;
+
+    const collectibles = [];
+    const bounds = groundables[0].getBounds();
+    const kaverit = new BABYLON.TransformNode("kaverit");
+
     const orvokit = [];
-    for (let i = 0; i < 10; i++) {
-        const orvokkiObject = new OrvokkiObject(scene);
-        orvokkiObject.setPosition(40 + (i * 3), 2, 50);
-        orvokit.push(orvokkiObject);
-        orvokkiObject.mesh.parent = kaverit;
+
+    
+
+
+    orvokit.push(orvokkiObject);
+
+    for (let i = 1; i < 10; i++) {
+        const orvokki3Object = new OrvokkiObject(scene);
+
+        orvokki3Object.setPosition(40 + (i * 3), 2, 50);
+        orvokit.push(orvokki3Object);
+        orvokki3Object.mesh.parent = kaverit;
     }
     const omenaMaterial = new TextureMaterial(scene, "./textures/apple.jpeg")
-    const obsticle = new ObsticleObject(scene, "trampoline.jpeg")
-    obsticle.setPosition(30, 2, 20);
-    obsticle.mesh.parent = ymparisto;
-
-    const obsticle2 = new ObsticleObject(scene, "trampoline2.jpeg")
-    obsticle2.setPosition(45, 5, 20);
-    obsticle2.mesh.parent = ymparisto;
+   
+   
 
     const omena = new OmenaObject(scene, omenaMaterial);
     omena.setPosition(45, 7, 20);
@@ -77,45 +74,12 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
         pickables.push(newOmena);
     }
 
-    const taloCount = 10;
-    const syvyysCount = 2;
-    for (let j = 1; j <= syvyysCount; j++) {
-        for (let i = 1; i <= taloCount; i++) {
-            createTaloWithImposter(() => {
-                const talo = new TaloObject(scene, 1);
-                talo.setPosition(bounds[0].x + (10 * i), 0, -100 + (20 * j));
-                talo.setScale(HiirulainenTerrain.randomIntFromInterval(5, 8));
-                talo.rotate(Math.PI / 2);
-                talo.mesh.parent = ymparisto;
-                return talo;
-            });
-        }
-
-        createTaloWithImposter(() => {
-            const ravintola = new TaloObject(scene, 3000);
-            //   ravintola.mesh.scaling.x = 100;
-            //  ravintola.mesh.scaling.y = 50;
-            ravintola.setPosition(25, 0, 50);
-            ravintola.setScale(5);
-            ravintola.mesh.scaling.x = 25;
-            ravintola.mesh.scaling.y = 20;
-            ravintola.mesh.position.y = -4;
-            ravintola.mesh.parent = ymparisto;
-
-            return ravintola;
-        });
-    }
-
+    const obsticles = createObsticles(scene, ymparisto);
     const meshImport = await BABYLON.SceneLoader.ImportMeshAsync(null, "./assets/rabbit/rabbit.babylon");
     const puput = createRabbits(scene, meshImport);
     const aiti = new AitiObject(scene);
     aiti.setPosition(40, 2, 47);
-    createTaloWithImposter(() => {
-        const talo2 = new TaloObject(scene, 2);
-        talo2.setPosition(3, 0, 15);
-        talo2.setScale(HiirulainenTerrain.randomIntFromInterval(4, 7));
-        return talo2;
-    });
+    createTalo(scene, ymparisto, bounds);
     new RoadObject(scene);
     const maikit = [];
     const piilopaikat = [
@@ -132,25 +96,26 @@ export async function createEnvironment(scene: Scene): Promise<ObjectsModel> {
 
     ];
     for (let i = 0; i < 10; i++) {
-        const maikki = new MaikkiObject(scene, HiirulainenTerrain.randomIntFromInterval(0, 4));
-        maikki.setPosition(HiirulainenTerrain.randomIntFromInterval(24, 35), 1.5, HiirulainenTerrain.randomIntFromInterval(26, 43));
+        const maikki = new MaikkiObject(scene, randomIntFromInterval(0, 4));
+        maikki.setPosition(randomIntFromInterval(24, 35), 1.5, randomIntFromInterval(26, 43));
         maikki.setPiilopaikka(piilopaikat[i]);
         maikit.push(maikki);
         maikki.mesh.parent = kaverit;
     }
     await createTrees(scene, ymparisto);
     createGrass(scene);
-    const enemies = [...createCars(scene), ...puput];
+    const joki = createJoki(scene, bounds);
+    const enemies = [...createCars(scene), ...puput, joki];
     return {
         player,
-        ground,
+        grounds: groundables,
         aiti,
         puput,
         orvokit,
         pickables,
         enemies,
         collectibles,
-        obsticles: [obsticle, obsticle2],
+        obsticles,
         piilotettavat: maikit
     };
 

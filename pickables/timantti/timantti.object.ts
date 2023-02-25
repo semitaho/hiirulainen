@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs';
-import { EnvironmentObject } from "./environment.object";
+import { EnvironmentObject } from "../../environment/environment.object";
 
 export class TimanttiObject extends EnvironmentObject {
 

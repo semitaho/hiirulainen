@@ -3,25 +3,28 @@ import { AbstractMesh, ArcFollowCamera, Engine, HemisphericLight, Quaternion, Sc
 
 import { loadAudio } from './audio';
 import { UIModel } from './models/ui.model';
-import { createScene, createShadows, createUI, registerServiceWorker } from './core';
-import { moveTowards, rotateTowards, toVector3 } from './utils/geometry.util';
+import { createScene, createShadows, registerServiceWorker } from './core';
+import { moveTowards, randomIntFromInterval, rotateTowards, toVector3 } from './utils/geometry.util';
 import { createEnvironment } from './environment';
+import { createGUI } from './gui/gui.creator'
 import { ObjectsModel } from './models/objects.model';
 import { EnemyAi } from './ai';
 import { createInputControls } from './player/player.input';
 import { HiirulainenCamera } from './core/hiirulainen.camera';
 import { AudiosModel } from './models/audios.model';
 import { HiirulainenAudio } from './audio/hiirulainen.audio';
-import { HiirulainenTerrain } from './core/hiirulainen.terrain';
 import { vilkkuminen } from './core/animations';
 import { DEFAULT_ENDING_SCORES, FALLING_POSITION_WHEN_RESTART } from "./core/config";
 import * as GUI from 'babylonjs-gui';
 import { Player } from './player/player';
 
-function createColliderActions(scene: Scene, { player, obsticles, ground }: ObjectsModel): void {
-  player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
-    player.toggleJump(false);
-  });
+function createColliderActions(scene: Scene, { player, obsticles, grounds }: ObjectsModel): void {
+  grounds.forEach(ground => {
+    player.mesh.physicsImpostor.registerOnPhysicsCollide(ground.mesh.physicsImpostor, () => {
+      player.toggleJump(false);
+    });
+  })
+  
 
   obsticles.forEach(obsticle =>
     player.mesh.physicsImpostor.registerOnPhysicsCollide(obsticle.mesh.physicsImpostor, () => {
@@ -69,7 +72,7 @@ function createPickableActions(scene: Scene, { scores, ui, omenaTekstiBlock }: U
       () => {
         piilotettava.setLoydetty();
         loytyi.then((audio: HiirulainenAudio) => {
-          const playbackRate = HiirulainenTerrain.randomIntFromInterval(50, 150) / 100;
+          const playbackRate = randomIntFromInterval(50, 150) / 100;
           audio.setPlaybackRate(playbackRate);
           audio.play();
         });
@@ -151,7 +154,7 @@ async function loadGame(engine: Engine): Promise<void> {
   const objects = await createEnvironment(scene);
  
   const audios = loadAudio(scene);
-  const uiModel = createUI(scene);
+  const uiModel = createGUI(scene);
   const camera: ArcFollowCamera = new HiirulainenCamera(canvas, objects.player, scene);
 
   createActions(scene, camera, objects, audios, uiModel);

@@ -10,6 +10,11 @@ export function convertColor(r: number, g: number, b:number): BABYLON.Color3 {
    return new BABYLON.Color3(r / 255, g / 255, b / 255);
 }
 
+export function randomIntFromInterval(min: number, max: number): number { // min and max included 
+   return Math.floor(Math.random() * (max - min + 1) + min)
+ }
+
+
 export function moveTowards(mesh: AbstractMesh, location: Vector3, camera: ArcFollowCamera, speed: number = 0.1, jump = false): void {
 
    const distance = Vector3.Distance(mesh.position, new Vector3(location.x, mesh.position.y, location.z));

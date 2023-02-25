@@ -9,7 +9,7 @@ export const DEFAULT_OBJECT_MASS = 1;
 
 export const DEFAULT_ENDING_SCORES = "10";
 
-export const DEFAULT_JUMP_IMPULSE = 15;
+export const DEFAULT_JUMP_IMPULSE = 20;
 
 export const DEFAULT_FRAMERATE = 30;
 

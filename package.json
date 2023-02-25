@@ -40,6 +40,7 @@
     "babylonjs": "^5.38.0",
     "babylonjs-gui": "^5.38.0",
     "babylonjs-loaders": "^5.38.0",
+    "babylonjs-materials": "^5.47.0",
     "babylonjs-procedural-textures": "^5.38.0",
     "cannon": "^0.6.2",
     "earcut": "^2.2.4"

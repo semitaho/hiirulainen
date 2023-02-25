@@ -2,9 +2,8 @@ import { AbstractMesh, Color3, Mesh, PhysicsImpostor, Scene, StandardMaterial, T
 
 import * as BABYLON from 'babylonjs';
 import { DEFAULT_OBJECT_MASS } from "../core/config";
-import { convertColor } from "../utils/geometry.util";
+import { convertColor, randomIntFromInterval } from "../utils/geometry.util";
 import { suljeAvaaSilmat } from "../core/animations";
-import { HiirulainenTerrain } from "../core/hiirulainen.terrain";
 export abstract class AbstractHiiriObject {
 
   public mesh: BABYLON.Mesh;
@@ -24,7 +23,7 @@ export abstract class AbstractHiiriObject {
     this.leftKasiMesh = this.createKasi("kasi1", this.createKasiMaterial(), this.vartaloMesh, -1, scene);
     this.rightKasiMesh = this.createKasi("kasi2", this.createKasiMaterial(), this.vartaloMesh, 1, scene);
     this.createHanta(this.vartaloMesh, scene);
-    const silmatStartTime = HiirulainenTerrain.randomIntFromInterval(2, 10);
+    const silmatStartTime = randomIntFromInterval(2, 10);
     this.leftSilmaMesh = this.createSilma("silma1", meshPaa, -1, silmatStartTime);
     this.rightSilmaMesh = this.createSilma("silma2", meshPaa, 1, silmatStartTime);
     this.createKorva("korva1", meshPaa, 1);

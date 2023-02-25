@@ -8,7 +8,7 @@ export function loadAudio(scene: Scene): AudiosModel {
     volume: 0.2, autoplay: false, loop: true
   }).then((audio: HiirulainenAudio) => audio.play());
 
-  startLaskeminen(scene);
+  //startLaskeminen(scene);
 
   return {
     loytyi: createHiirulainenAudio("loytyi.m4a", scene, {volume: 1.2,  }) 

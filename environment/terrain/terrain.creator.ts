@@ -7,7 +7,7 @@ import { MultaObject } from "../multa/multa.object";
 import { TerrainObject } from './terrain.object';
 export function createTerrains(scene: Scene): Groundable[] {
   const ground = new TerrainObject(scene, 80);
-  const multaMaterial =  new   TextureMaterial(scene, "/assets/multa/soilMud.jpeg");
+  const multaMaterial =  new   TextureMaterial(scene, "./assets/multa/soilMud.jpeg");
   const mullat = [];
   for (let i = 0; i < 20; i++) {
     const treePositionX = Math.random() * (-100);

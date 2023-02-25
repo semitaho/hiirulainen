@@ -11,7 +11,7 @@ export async function createTrees(scene: BABYLON.Scene, parent: BABYLON.Transfor
 
 function createSpriteTrees(scene: BABYLON.Scene, parent: BABYLON.TransformNode) {
   const spriteManagerTrees = new BABYLON.SpriteManager("treesManager", "textures/palmtree.png", 1000, { width: 512, height: 1024 }, scene);
-  const multaMaterial =  new   TextureMaterial(scene, "/assets/multa/soilMud.jpeg");;
+  const multaMaterial =  new   TextureMaterial(scene, "./assets/multa/soilMud.jpeg");
 
   for (let i = 0; i < 20; i++) {
     const tree = new BABYLON.Sprite("tree", spriteManagerTrees);

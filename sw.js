@@ -6,7 +6,6 @@ const CACHED_RESOURCES = [
   */
   "audio/tunetank.mp3",
   "audio/pickup.mp3",
-
   "assets/rabbit/0.jpg",
   "assets/talo/cubehouse.png",  
   "assets/talo/roof.jpg",  

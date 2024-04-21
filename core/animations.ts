@@ -93,7 +93,7 @@ export function createHulahula(): BABYLON.Animation {
 
 
 export function createJumpHitAnimation(): BABYLON.Animation {
-  const hitAnimation = new BABYLON.Animation("jumHitAnimation", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+  const hitAnimation = new BABYLON.Animation("jumpHitAnimation", "position.y", DEFAULT_FRAMERATE, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
   const arr = [{
     frame: 0,
     value: 0
@@ -290,7 +290,7 @@ export function ampaiseVittuun(startY: number): BABYLON.Animation {
   //At the animation key 30, (after 1 sec since animation fps = 30) the value of rotation.y is 2PI for a complete rotation
   wheelKeys.push({
     frame: DEFAULT_FRAMERATE,
-    value: 20
+    value: 30
   });
 
   animWheel.setKeys(wheelKeys);

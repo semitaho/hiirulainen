@@ -4,8 +4,30 @@ import * as BABYLON from 'babylonjs';
 import { Scene } from 'babylonjs';
 import { UIModel } from '../models/ui.model';
 
-export function createGUI(scene: Scene): UIModel {
+
+export function createStartMenu(gui: GUI.AdvancedDynamicTexture ): GUI.Button {
+      // Create start button
+      var button =  GUI.Button.CreateSimpleButton("startButton", "Start Game");
+      button.width = "200px";
+      button.height = "60px";
+      button.color = "white";
+      button.background = "green";
+      button.onPointerUpObservable.add(function() {
+          // Start button action (e.g., load game scene)
+          console.log("Start button clicked");
+      });
+      button.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+      gui.addControl(button);
+      return button;
+
+}
+
+export function createFullScreenUI(): GUI.AdvancedDynamicTexture {
     var ui = GUI.AdvancedDynamicTexture.CreateFullscreenUI("ui");
+    return ui;
+
+}
+export function createGameGUI(ui: GUI.AdvancedDynamicTexture): UIModel {
     const textBlock = new GUI.TextBlock("score", "0");
     textBlock.color = "yellow";
     textBlock.fontSize = "50";

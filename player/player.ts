@@ -163,4 +163,9 @@ export class Player extends AbstractHiiriObject {
     //this.hitAnimation = this.scene.beginDirectAnimation(this.mesh, [animation], 0, 30);
   }
 
+  public isHitAnimationRunning(): boolean {
+    return this.hitAnimation && this.hitAnimation.animationStarted;
+  
+  }
+
 }

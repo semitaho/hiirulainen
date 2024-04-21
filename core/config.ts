@@ -23,4 +23,4 @@ export const AI_DISTANCE_TO_FOLLOW = 12;
 
 export const TIME_IN_WAYPOINT_MS = 4000;
 
-export const PLAYER_STARTING_POINT = new Vector3(16,2.5,14);
+export const PLAYER_STARTING_POINT = new Vector3(16,2.5,20);
